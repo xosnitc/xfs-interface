@@ -4,42 +4,54 @@
 
 #include <stdio.h>
 #include <string.h>
-#include<stdlib.h>
-#include<fcntl.h>
+#include <stdlib.h>
+#include <fcntl.h>
 #include "disk.h"
 /*
 Declarations of Disk parameters
 */
 
-#define BLOCK_SIZE 256
+#define BLOCK_SIZE 512
 #define WORD_SIZE 16
 #define OS_STARTUP_CODE 0
-#define INT0 1
-#define INT1 2
-#define INT2 3
-#define INT3 4
-#define INT4 5
-#define INT5 6
-#define INT6 7
-#define INT7 8
-#define FREE_LIST_START_BLOCK 9
-#define NO_OF_FREE_LIST_BLOCKS 2
-#define FAT_START_BLOCK 11
-#define NO_OF_FAT_BLOCKS 2
-#define TOTAL_DISK_BLOCKS 512
+#define EX_HANDLER 1
+#define TIMERINT 2
+#define INT1 3
+#define INT2 4
+#define INT3 5
+#define INT4 6
+#define INT5 7
+#define INT6 8
+#define INT7 9
+
+#define FAT 10
+#define NO_OF_FAT_BLOCKS 1
+
+#define DISK_FREE_LIST 11
+#define NO_OF_FREE_LIST_BLOCKS 1
+
+#define INIT_BASIC_BLOCK 13
+#define INIT_NAME "init.xsm\n"
+#define NO_OF_INIT_BLOCKS 2
+
+#define DATA_START_BLOCK 16
+#define NO_OF_DATA_BLOCKS 432
+
+#define SWAP_START_BLOCK 448
+#define NO_OF_SWAP_BLOCKS 64
+
+#define NO_OF_DISK_BLOCKS 512
+
 #define DISK_SIZE (TOTAL_DISK_BLOCKS * BLOCK_SIZE)
-#define DATA_START_BLOCK 13
-#define INIT_NAME "init.esim\n"
-#define INIT_SIZE 4
-#define INIT_BASIC_BLOCK DATA_START_BLOCK
+
 
 /*
-Declarations for FAT
+Declarations for FAT Entry
 */ 
-#define FAT_FILENAME 0
-#define FAT_FILESIZE 1
-#define FAT_BASICBLOCK 2
-#define FAT_ENTRY_SIZE 16
+#define FATENTRY_FILENAME 0
+#define FATENTRY_FILESIZE 1
+#define FATENTRY_BASICBLOCK 2
+#define FATENTRY_SIZE 8
 #define FAT_SIZE (NO_OF_FAT_BLOCKS * BLOCK_SIZE)
 
 /*
@@ -52,12 +64,13 @@ Declarations for files
 
 
 /*
-Declarations for coding
+Other declarations
 */
 
-#define NO_BLOCKS_TO_COPY 13                      //Rest of the blocks have data. Blocks 0-12 need to be copied 
+#define NO_BLOCKS_TO_COPY 12        //Rest of the blocks have data. Blocks 0-12 need to be copied 
 #define EXTRA_BLOCKS	1			// Need a temporary block
-#define TEMP_BLOCK 13				//Temporary block no: starting from 0.
+#define TEMP_BLOCK 12				//Temporary block no: starting from 0.
+
 
 typedef struct{
 	char word[BLOCK_SIZE][WORD_SIZE];

@@ -15,14 +15,14 @@ void emptyBlock(int blockNo) {
 /*
   char* to int conversion
 */
-int getInteger(char* str ) {
+int getValue(char* str ) {
 	return *((int*)str);
 }
 
 /*
   int to char* conversion
 */
-void storeInteger(char *str, int num) {
+void storeValue(char *str, int num) {
 	char *c = (char*)&num;
 	str[0] = *c;
 	str[1] = *(c + 1);
@@ -73,9 +73,9 @@ int writeToDisk(int virtBlockNumber, int fileBlockNumber) {
 */
 int loadFileToVirtualDisk(){
   int i;
-  for(i=FREE_LIST_START_BLOCK; i<FREE_LIST_START_BLOCK + NO_OF_FREE_LIST_BLOCKS; i++)
+  for(i=DISK_FREE_LIST; i<DISK_FREE_LIST + NO_OF_FREE_LIST_BLOCKS; i++)
       readFromDisk(i,i);
-  for(i=FAT_START_BLOCK; i<FAT_START_BLOCK + NO_OF_FAT_BLOCKS; i++)
+  for(i=FAT; i<FAT + NO_OF_FAT_BLOCKS; i++)
       readFromDisk(i,i);
 }
 

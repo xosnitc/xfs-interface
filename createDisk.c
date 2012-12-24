@@ -15,39 +15,39 @@
 */
 void createDisk(int format){
     int fd;
-      if(format){
-	 fd = open(DISK_NAME, O_CREAT | O_TRUNC | O_SYNC, 0666);
-	 clearVirtDisk();
-	 close(fd);
-	// loadFileToVirtualDisk();		note: commented this line
-	 int i=0,j=0;
-	 for(j=0; j<NO_OF_FREE_LIST_BLOCKS; j++){
-		if(j == 0)
-		  for(i=0;i<DATA_START_BLOCK + INIT_SIZE ;i++)
-		      storeInteger(disk[FREE_LIST_START_BLOCK].word[i], 1);
-		else
-			i=0;
-		
-		for( ;i<BLOCK_SIZE;i++)
-			storeInteger(disk[FREE_LIST_START_BLOCK + j].word[i], 0);
-		writeToDisk(FREE_LIST_START_BLOCK + j, FREE_LIST_START_BLOCK+j);
-	    }
-	    
-	    
-	for(j=0; j<NO_OF_FAT_BLOCKS; j++){
-		for(i=FAT_BASICBLOCK; i<BLOCK_SIZE; i=i+FAT_ENTRY_SIZE){
-			storeInteger(disk[FAT_START_BLOCK + j].word[i], -1);
+    if(format)
+    {
+		fd = open(DISK_NAME, O_CREAT | O_TRUNC | O_SYNC, 0666);
+		clearVirtDisk();
+		close(fd);
+		// loadFileToVirtualDisk();		note: commented this line
+		int i=0,j=0;
+		for(j=0; j<NO_OF_FREE_LIST_BLOCKS; j++)
+		{
+			if(j == 0)
+	  		for(i=0;i<DATA_START_BLOCK + NO_OF_INIT_BLOCKS ;i++)
+		 		 storeValue(disk[DISK_FREE_LIST].word[i], 1);
+			else
+				i=0;
+			for( ;i<BLOCK_SIZE;i++)
+				storeValue(disk[DISK_FREE_LIST + j].word[i], 0);
+			writeToDisk(DISK_FREE_LIST + j, DISK_FREE_LIST+j);
 		}
-		writeToDisk(FAT_START_BLOCK+j, FAT_START_BLOCK+j);
+		for(j=0; j<NO_OF_FAT_BLOCKS; j++)
+		{
+			for(i=FATENTRY_BASICBLOCK; i<BLOCK_SIZE; i=i+FATENTRY_SIZE)
+			{
+				storeValue(disk[FAT + j].word[i], -1);
+			}
+			writeToDisk(FAT+j, FAT+j);
+		}
+		initializeINIT();
 	}
-	
-	initializeINIT();
-      }
-      else
-      {
-	fd = open(DISK_NAME, O_CREAT, 0666);
-	close(fd);
-      }
+	else
+	{
+		fd = open(DISK_NAME, O_CREAT, 0666);
+		close(fd);
+	}
 	
 }
 

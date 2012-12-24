@@ -12,10 +12,10 @@
 */
 void listAllFiles(){
 	int i,j;
-	for(j = FAT_START_BLOCK ; j < FAT_START_BLOCK + NO_OF_FAT_BLOCKS ; j++){
-		for(i = FAT_BASICBLOCK ; i < BLOCK_SIZE ; i = i + FAT_ENTRY_SIZE){
-			if( getInteger(disk[j].word[i]) != -1 )
-				printf("%s\n",disk[j].word[i-FAT_BASICBLOCK]);
+	for(j = FAT ; j < FAT + NO_OF_FAT_BLOCKS ; j++){
+		for(i = FATENTRY_BASICBLOCK ; i < BLOCK_SIZE ; i = i + FATENTRY_SIZE){
+			if( getValue(disk[j].word[i]) != -1 )
+				printf("%s\n",disk[j].word[i-FATENTRY_BASICBLOCK]);
 		}
 	}
 }
@@ -30,13 +30,13 @@ void listAllFiles(){
 int CheckRepeatedName(char *name){
 	int i,j;
 	//name = strcat(name, "\n");
-	for(j = FAT_START_BLOCK ; j < FAT_START_BLOCK + NO_OF_FAT_BLOCKS ; j++){
-		for(i = FAT_FILENAME ; i < BLOCK_SIZE ; i = i + FAT_ENTRY_SIZE)	{
-			if(strcmp(disk[j].word[i],name) == 0 && getInteger(disk[j].word[i]) != -1)		//note: modified here
-				return (((j - FAT_START_BLOCK) * BLOCK_SIZE) + i);
+	for(j = FAT ; j < FAT + NO_OF_FAT_BLOCKS ; j++){
+		for(i = FATENTRY_FILENAME ; i < BLOCK_SIZE ; i = i + FATENTRY_SIZE)	{
+			if(strcmp(disk[j].word[i],name) == 0 && getValue(disk[j].word[i]) != -1)		//note: modified here
+				return (((j - FAT) * BLOCK_SIZE) + i);
 		}
 	}
-	return (((j - FAT_START_BLOCK)* BLOCK_SIZE) + i);
+	return (((j - FAT)* BLOCK_SIZE) + i);
 }
 
 
@@ -48,10 +48,10 @@ int CheckRepeatedName(char *name){
 */
 int getDataBlocks(int *basicBlockAddr, int locationOfFat){
 	int i;
-	basicBlockAddr[0] = getInteger(disk[FAT_START_BLOCK + locationOfFat / BLOCK_SIZE].word[locationOfFat % BLOCK_SIZE + FAT_BASICBLOCK]);
+	basicBlockAddr[0] = getValue(disk[FAT + locationOfFat / BLOCK_SIZE].word[locationOfFat % BLOCK_SIZE + FATENTRY_BASICBLOCK]);
 	readFromDisk(TEMP_BLOCK,basicBlockAddr[0]);                 //note:need to modify this
 	for( i = 0 ; i < SIZE_EXEFILE ; i++){
-		basicBlockAddr[i+1] = getInteger(disk[TEMP_BLOCK].word[i]);
+		basicBlockAddr[i+1] = getValue(disk[TEMP_BLOCK].word[i]);
 	}
 	return 0;
 }
@@ -61,9 +61,9 @@ int getDataBlocks(int *basicBlockAddr, int locationOfFat){
 
 // int dispBasicBlock(int locationOfFat){
 // 	int i;
-// 	readFromDisk(TEMP_BLOCK,getInteger(disk[FAT_START_BLOCK + locationOfFat / BLOCK_SIZE].word[locationOfFat % BLOCK_SIZE + FAT_BASICBLOCK]));                 //note:need to modify this
+// 	readFromDisk(TEMP_BLOCK,getValue(disk[FAT + locationOfFat / BLOCK_SIZE].word[locationOfFat % BLOCK_SIZE + FATENTRY_BASICBLOCK]));                 //note:need to modify this
 // 	for( i = 0 ; i < SIZE_EXEFILE ; i++){
-// 		printf("%d\n", getInteger(disk[TEMP_BLOCK].word[i]));
+// 		printf("%d\n", getValue(disk[TEMP_BLOCK].word[i]));
 // 	}
 // 	return 0;
 // }
@@ -78,12 +78,12 @@ int getDataBlocks(int *basicBlockAddr, int locationOfFat){
 void FreeUnusedBlock(int *freeBlock, int size){
 	int i=0;
 	for( i = 0 ; i < size && freeBlock[i] != -1 ; i++){
-		storeInteger( disk[FREE_LIST_START_BLOCK + freeBlock[i] / BLOCK_SIZE].word[freeBlock[i] % BLOCK_SIZE] , 0 );
+		storeValue( disk[DISK_FREE_LIST + freeBlock[i] / BLOCK_SIZE].word[freeBlock[i] % BLOCK_SIZE] , 0 );
 	}
 	
 // 	for( i = 0 ; i < size ; i++){
 // 		printf("Block Num = %d\n %d\n", freeBlock[i], sizeof(freeBlock)/sizeof(int));
-// 		printf("%d\n", getInteger(disk[FREE_LIST_START_BLOCK + freeBlock[i] / BLOCK_SIZE].word[freeBlock[i] % BLOCK_SIZE]));
+// 		printf("%d\n", getValue(disk[DISK_FREE_LIST + freeBlock[i] / BLOCK_SIZE].word[freeBlock[i] % BLOCK_SIZE]));
 // 	}
 
 }
@@ -99,12 +99,12 @@ void FreeUnusedBlock(int *freeBlock, int size){
 */
 int removeFatEntry(int locationOfFat){
 	int i;
-	int blockNumber = FAT_START_BLOCK + locationOfFat / BLOCK_SIZE;
+	int blockNumber = FAT + locationOfFat / BLOCK_SIZE;
 	int startWordNumber = locationOfFat % BLOCK_SIZE;
-	for( i = startWordNumber ; i < startWordNumber + FAT_ENTRY_SIZE ; i++ ){
+	for( i = startWordNumber ; i < startWordNumber + FATENTRY_SIZE ; i++ ){
 		strcpy(disk[blockNumber].word[i],"");
 	}
-	storeInteger(disk[blockNumber].word[startWordNumber + FAT_BASICBLOCK], -1);
+	storeValue(disk[blockNumber].word[startWordNumber + FATENTRY_BASICBLOCK], -1);
 	return 0;
 }
 
@@ -131,13 +131,13 @@ int deleteExecutableFromDisk(char *name){
 	}
 	getDataBlocks(blockAddresses,locationOfFat);		
 	FreeUnusedBlock(blockAddresses, SIZE_EXEFILE_BASIC);
-// 	writeToDisk(FREE_LIST_START_BLOCK, FREE_LIST_START_BLOCK);
-// 	writeToDisk(FREE_LIST_START_BLOCK+1, FREE_LIST_START_BLOCK+1);
+// 	writeToDisk(DISK_FREE_LIST, DISK_FREE_LIST);
+// 	writeToDisk(DISK_FREE_LIST+1, DISK_FREE_LIST+1);
 	removeFatEntry(locationOfFat);
-	for(i = FAT_START_BLOCK ; i < FAT_START_BLOCK + NO_OF_FAT_BLOCKS ; i++){
+	for(i = FAT ; i < FAT + NO_OF_FAT_BLOCKS ; i++){
 		writeToDisk(i,i);
 	}
-	for( i=FREE_LIST_START_BLOCK ; i<FREE_LIST_START_BLOCK + NO_OF_FREE_LIST_BLOCKS; i++)
+	for( i=DISK_FREE_LIST ; i<DISK_FREE_LIST + NO_OF_FREE_LIST_BLOCKS; i++)
 		writeToDisk(i,i);
 		return 0;	
 }
@@ -150,11 +150,11 @@ int deleteExecutableFromDisk(char *name){
 */
 int FindFreeBlock(){
 	int i,j;
-	for(i = FREE_LIST_START_BLOCK ; i < FREE_LIST_START_BLOCK + NO_OF_FREE_LIST_BLOCKS ;i++){
+	for(i = DISK_FREE_LIST ; i < DISK_FREE_LIST + NO_OF_FREE_LIST_BLOCKS ;i++){
 		for(j = 0 ; j < BLOCK_SIZE; j++){
-			if( getInteger(disk[i].word[j]) == 0 ){
-				storeInteger( disk[i].word[j] , 1 );	
-				return ((i-FREE_LIST_START_BLOCK)*BLOCK_SIZE + j);
+			if( getValue(disk[i].word[j]) == 0 ){
+				storeValue( disk[i].word[j] , 1 );	
+				return ((i-DISK_FREE_LIST)*BLOCK_SIZE + j);
 			}
 		}
 	}
@@ -170,10 +170,10 @@ int FindFreeBlock(){
 */
 int FindEmptyFatEntry(){
 	int i,j,entryFound = 0,entryNumber = 0;
-	for(j = FAT_START_BLOCK ; j < FAT_START_BLOCK + NO_OF_FAT_BLOCKS ; j++){
-		for(i = FAT_BASICBLOCK; i < BLOCK_SIZE ; i = i + FAT_ENTRY_SIZE){
-			if( getInteger(disk[j].word[i]) == -1  ){
-				entryNumber = (((j - FAT_START_BLOCK) * BLOCK_SIZE) + i);
+	for(j = FAT ; j < FAT + NO_OF_FAT_BLOCKS ; j++){
+		for(i = FATENTRY_BASICBLOCK; i < BLOCK_SIZE ; i = i + FATENTRY_SIZE){
+			if( getValue(disk[j].word[i]) == -1  ){
+				entryNumber = (((j - FAT) * BLOCK_SIZE) + i);
 				entryFound = 1;
 				break;
 			}
@@ -186,7 +186,7 @@ int FindEmptyFatEntry(){
 		// note:FreeUnusedBlock(freeBlock);
 		return -1;
 	}
-	return (entryNumber-FAT_BASICBLOCK);
+	return (entryNumber-FATENTRY_BASICBLOCK);
 }
 
 
@@ -197,9 +197,9 @@ int FindEmptyFatEntry(){
 */
 void AddEntryToMemFat(int startIndexInFat, char *nameOfFile, int size_of_file, int addrOfBasicBlock){
 	//char* str = strcat(nameOfFile,"\n");		//NOTE: Changed here
-	strcpy(disk[FAT_START_BLOCK + (startIndexInFat / BLOCK_SIZE)].word[startIndexInFat % BLOCK_SIZE],nameOfFile);
-	storeInteger( disk[FAT_START_BLOCK + (startIndexInFat / BLOCK_SIZE)].word[startIndexInFat % BLOCK_SIZE + FAT_FILESIZE] , size_of_file );
-	storeInteger( disk[FAT_START_BLOCK + (startIndexInFat / BLOCK_SIZE)].word[startIndexInFat % BLOCK_SIZE + FAT_BASICBLOCK] , addrOfBasicBlock );
+	strcpy(disk[FAT + (startIndexInFat / BLOCK_SIZE)].word[startIndexInFat % BLOCK_SIZE],nameOfFile);
+	storeValue( disk[FAT + (startIndexInFat / BLOCK_SIZE)].word[startIndexInFat % BLOCK_SIZE + FATENTRY_FILESIZE] , size_of_file );
+	storeValue( disk[FAT + (startIndexInFat / BLOCK_SIZE)].word[startIndexInFat % BLOCK_SIZE + FATENTRY_BASICBLOCK] , addrOfBasicBlock );
 }
 
 
@@ -278,17 +278,17 @@ int loadExecutableToDisk(char *name){
 	AddEntryToMemFat(i, name, SIZE_EXEFILE * BLOCK_SIZE, freeBlock[0]);		
 // 	printf("FAT %d\n", i);
 // 	printf("basic %d\n", freeBlock[0]);
-	for(i = FAT_START_BLOCK; i < FAT_START_BLOCK + NO_OF_FAT_BLOCKS ; i++){
+	for(i = FAT; i < FAT + NO_OF_FAT_BLOCKS ; i++){
 		writeToDisk(i,i);				//updating disk fat entry note:check for correctness
 	}
-	for(i = FREE_LIST_START_BLOCK ;i < FREE_LIST_START_BLOCK + NO_OF_FREE_LIST_BLOCKS; i++)		//updating disk free list in disk
+	for(i = DISK_FREE_LIST ;i < DISK_FREE_LIST + NO_OF_FREE_LIST_BLOCKS; i++)		//updating disk free list in disk
 		writeToDisk(i, i);
 	emptyBlock(TEMP_BLOCK);				//note:need to modify this
 	
 	for( i = 1 ; i < SIZE_EXEFILE_BASIC ; i++ ){
-		storeInteger(disk[TEMP_BLOCK].word[i-1],freeBlock[i]); 
+		storeValue(disk[TEMP_BLOCK].word[i-1],freeBlock[i]); 
 	}
-	storeInteger(disk[TEMP_BLOCK].word[i-1],0);
+	storeValue(disk[TEMP_BLOCK].word[i-1],0);
 	writeToDisk(TEMP_BLOCK,freeBlock[0]);
 	j = writeFileToDisk(fileToBeLoaded, freeBlock[1]);		//writing executable file to disk
 	if(j == 1)
@@ -336,13 +336,13 @@ int loadIntCode(char* fileName, int intNo){
     return -1;
   }
   instrCount = 0;
-  while(fgets(disk[intNo + INT0].word[instrCount++], 16, fp)){
+  while(fgets(disk[intNo + INT1 - 1].word[instrCount++], 16, fp)){
     if(instrCount > BLOCK_SIZE){
       printf("Interrupt Code size exceeds one block\n");
       return -1;
     }
   }
-  writeToDisk(intNo+INT0 ,intNo+INT0);
+  writeToDisk(intNo + INT1 - 1 ,intNo + INT1 - 1);
   close(fp);
   return 0;
 }
@@ -362,12 +362,12 @@ int initializeINIT(){
       return -1;
     }
     AddEntryToMemFat(i, INIT_NAME, SIZE_EXEFILE * BLOCK_SIZE, INIT_BASIC_BLOCK);
-    for(i = FAT_START_BLOCK; i < FAT_START_BLOCK + NO_OF_FAT_BLOCKS ; i++)
+    for(i = FAT; i < FAT + NO_OF_FAT_BLOCKS ; i++)
 		writeToDisk(i,i);				//updating disk fat entry note:check for correctness
     emptyBlock(TEMP_BLOCK);				//note:need to modify this
 	
     for( i = 1 ; i < SIZE_EXEFILE_BASIC ; i++ )						//updating basic block for file on disk
-	storeInteger(disk[TEMP_BLOCK].word[i-1],INIT_BASIC_BLOCK + i); 
+	storeValue(disk[TEMP_BLOCK].word[i-1],INIT_BASIC_BLOCK + i); 
     writeToDisk(TEMP_BLOCK, INIT_BASIC_BLOCK);
   }
 }
