@@ -210,76 +210,66 @@ void AddEntryToMemFat(int startIndexInFat, char *nameOfFile, int size_of_file, i
   NOTE: 1. EOF is set only after reading beyond the end of the file. This is the reason why the if condition is needed is needed.
 	2. Also the function must read till EOF or BLOCK_SIZE line so that successive read proceeds accordingly
 */
-int writeFileToDisk(FILE *f, int blockNum){
+int writeFileToDisk(FILE *f, int blockNum, int type){
 	int i, line=0,j;
 	emptyBlock(TEMP_BLOCK);
-	char buffer[32];
-	char s[16];
-	char *instr, *arg1, *arg2;
-	char c;
-	int line_count=0;
-	for(i = 0; i < BLOCK_SIZE; i=i++){
-		fgets(buffer,32,f);
-		if(buffer[strlen(buffer)-1]=='\n')
-			buffer[strlen(buffer)-1]='\0';
-		instr=strtok(buffer," ");
-		arg1=strtok(NULL," ");
-		arg2=strtok(NULL," ");
-		bzero(s,16);
-		if(arg1!=NULL)
-		{
-			sprintf(s,"%s %s",instr,arg1);
-			for(j=strlen(s);j<16;j++)
-				s[j]='\0';
-			strcpy(disk[TEMP_BLOCK].word[line_count],s);
-			if(arg2!=NULL)
+	if(type==0)			//writing files with assembly code
+	{
+		char buffer[32],s[16];
+		char *instr, *arg1, *arg2;
+		int line_count=0;
+		for(i = 0; i < BLOCK_SIZE; i=i++){
+			fgets(buffer,32,f);
+			if(buffer[strlen(buffer)-1]=='\n')
+				buffer[strlen(buffer)-1]='\0';
+			instr=strtok(buffer," ");
+			arg1=strtok(NULL," ");
+			arg2=strtok(NULL," ");
+			bzero(s,16);
+			if(arg1!=NULL)
 			{
-				strcpy(s,arg2);
+				sprintf(s,"%s %s",instr,arg1);
 				for(j=strlen(s);j<16;j++)
 					s[j]='\0';
-				strcpy(disk[TEMP_BLOCK].word[line_count+1],s);
+				strcpy(disk[TEMP_BLOCK].word[line_count],s);
+				if(arg2!=NULL)
+				{
+					strcpy(s,arg2);
+					for(j=strlen(s);j<16;j++)
+						s[j]='\0';
+					strcpy(disk[TEMP_BLOCK].word[line_count+1],s);
 				
+				}
+				else
+				{
+					for(j=0;j<16;j++)
+						s[j]='\0';
+					strcpy(disk[TEMP_BLOCK].word[line_count+1],s);
+				}
+				line_count=line_count+2;
 			}
 			else
 			{
+				sprintf(s,"%s",instr);
+				for(j=strlen(s);j<=16;j++)
+					strcat(s,"\0");
+				strcpy(disk[TEMP_BLOCK].word[line_count],s);
 				for(j=0;j<16;j++)
 					s[j]='\0';
 				strcpy(disk[TEMP_BLOCK].word[line_count+1],s);
-			}
-			line_count=line_count+2;
-		}
-		else
-		{
-			sprintf(s,"%s",instr);
-			for(j=strlen(s);j<=16;j++)
-				strcat(s,"\0");
-			strcpy(disk[TEMP_BLOCK].word[line_count],s);
-			for(j=0;j<16;j++)
-				s[j]='\0';
-			strcpy(disk[TEMP_BLOCK].word[line_count+1],s);
-			line_count=line_count+2;
+				line_count=line_count+2;
 			
+			}
+			 if(feof(f)){
+				 strcpy(disk[TEMP_BLOCK].word[line_count], "");
+				writeToDisk(TEMP_BLOCK,blockNum);
+				return -1;
+			 }
 		}
-		
-		 /*if(!feof(f)){
-//  		    printf("%d---%s--%d\n", blockNum, disk[TEMP_BLOCK].word[i], line++);   //note:For debugging
-//  		    scanf("%c", &c);
-		    if((strcmp(disk[TEMP_BLOCK].word[i],"OVER") == 0 || strcmp(disk[TEMP_BLOCK].word[i],"OVER\n") == 0)){
-		      writeToDisk(TEMP_BLOCK,blockNum);
-		      }
-		 }
-		 else*/				//note: modified here
-		 if(feof(f)){
-			 strcpy(disk[TEMP_BLOCK].word[line_count], "");
-			writeToDisk(TEMP_BLOCK,blockNum);
-			return -1;
-		 }
-	}
-	
-	
-	
-	writeToDisk(TEMP_BLOCK,blockNum);
-	return 1;
+		writeToDisk(TEMP_BLOCK,blockNum);
+		return 1;
+	}	
+
 }
 
 
@@ -338,11 +328,11 @@ int loadExecutableToDisk(char *name){
 	}
 	storeValue(disk[TEMP_BLOCK].word[i-1],0);
 	writeToDisk(TEMP_BLOCK,freeBlock[0]);
-	j = writeFileToDisk(fileToBeLoaded, freeBlock[1]);		//writing executable file to disk
+	j = writeFileToDisk(fileToBeLoaded, freeBlock[1], ASSEMBLY_CODE);		//writing executable file to disk
 	if(j == 1)
-	  j = writeFileToDisk(fileToBeLoaded, freeBlock[2]);		//if the file is longer than one page.  
+	  j = writeFileToDisk(fileToBeLoaded, freeBlock[2], ASSEMBLY_CODE);		//if the file is longer than one page.  
 	if(j == 1)
-	  writeFileToDisk(fileToBeLoaded, freeBlock[3]);
+	  writeFileToDisk(fileToBeLoaded, freeBlock[3], ASSEMBLY_CODE);
       close(fileToBeLoaded);
       return 0;
 }
@@ -439,11 +429,11 @@ int loadINITCode(char* fileName ){
 		return -1;
 	}
 
-	j = writeFileToDisk(fp, INIT_BASIC_BLOCK);		//writing executable file to disk
+	j = writeFileToDisk(fp, INIT_BASIC_BLOCK, ASSEMBLY_CODE);		//writing executable file to disk
 	if(j == 1)
-		j = writeFileToDisk(fp, INIT_BASIC_BLOCK + 1);		//if the file is longer than one page.  
+		j = writeFileToDisk(fp, INIT_BASIC_BLOCK + 1, ASSEMBLY_CODE);		//if the file is longer than one page.  
 	if(j == 1)
-		writeFileToDisk(fp, INIT_BASIC_BLOCK + 2);
+		writeFileToDisk(fp, INIT_BASIC_BLOCK + 2, ASSEMBLY_CODE);
 	close(fp);
 	return 0;
   

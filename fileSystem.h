@@ -71,6 +71,8 @@ Other declarations
 #define EXTRA_BLOCKS	1			// Need a temporary block
 #define TEMP_BLOCK 12				//Temporary block no: starting from 0.
 
+#define ASSEMBLY_CODE 0
+#define DATA_FILE 1
 
 typedef struct{
 	char word[BLOCK_SIZE][WORD_SIZE];
@@ -133,9 +135,10 @@ void FreeUnusedBlock(int *freeBlock, int size);
 void AddEntryToMemFat(int startIndexInFat, char *nameOfFile, int sizeOfFile, int addrOfBasicBlock);
 
 /*
-  This file copies the necessary contents of a file to the corresponding location specified by the second arguemnt on the disk.
+  This function copies the necessary contents of a file to the corresponding location specified by the second arguemnt on the disk. The type specifies the type of file 
+  to be copied.
 */
-int writeFileToDisk(FILE *f, int blockNum);
+int writeFileToDisk(FILE *f, int blockNum, int type);
 
 /*
   This function loads the OS startup code specified by the first arguement to its appropriate location on disk.
