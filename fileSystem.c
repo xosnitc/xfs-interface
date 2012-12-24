@@ -355,24 +355,27 @@ int loadIntCode(char* fileName, int intNo){
   This function initialises the fat and basic block entries for the init process.
   The location of init process on the disk is fixed.
 */
-int initializeINIT(){
-  int locationOfFat, i;
-  locationOfFat = CheckRepeatedName(INIT_NAME);
-  if( locationOfFat >= FAT_SIZE ) {
-    i = FindEmptyFatEntry();
-    if(i == -1){
-      printf("Disk error: IT would be proper to format the disk before proceeding\n");
-      return -1;
-    }
-    AddEntryToMemFat(i, INIT_NAME, SIZE_EXEFILE * BLOCK_SIZE, INIT_BASIC_BLOCK);
-    for(i = FAT; i < FAT + NO_OF_FAT_BLOCKS ; i++)
-		writeToDisk(i,i);				//updating disk fat entry note:check for correctness
-    emptyBlock(TEMP_BLOCK);				//note:need to modify this
-	
-    for( i = 1 ; i < SIZE_EXEFILE_BASIC ; i++ )						//updating basic block for file on disk
-	storeValue(disk[TEMP_BLOCK].word[i-1],INIT_BASIC_BLOCK + i); 
-    writeToDisk(TEMP_BLOCK, INIT_BASIC_BLOCK);
-  }
+int initializeINIT()
+{
+	int locationOfFat, i;
+	locationOfFat = CheckRepeatedName(INIT_NAME);
+	if( locationOfFat >= FAT_SIZE ) 
+	{
+		i = FindEmptyFatEntry();
+		if(i == -1)
+		{
+			printf("Disk error: IT would be proper to format the disk before proceeding\n");
+			return -1;
+		}
+		AddEntryToMemFat(i, INIT_NAME, SIZE_EXEFILE * BLOCK_SIZE, INIT_BASIC_BLOCK);
+		for(i = FAT; i < FAT + NO_OF_FAT_BLOCKS ; i++)
+			writeToDisk(i,i);				//updating disk fat entry note:check for correctness
+		emptyBlock(TEMP_BLOCK);				//note:need to modify this
+
+		for( i = 1 ; i < SIZE_EXEFILE_BASIC ; i++ )						//updating basic block for file on disk
+			storeValue(disk[TEMP_BLOCK].word[i-1],INIT_BASIC_BLOCK + i); 
+		writeToDisk(TEMP_BLOCK, INIT_BASIC_BLOCK);
+	}
 }
 
 
