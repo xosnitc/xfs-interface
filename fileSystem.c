@@ -211,11 +211,56 @@ void AddEntryToMemFat(int startIndexInFat, char *nameOfFile, int size_of_file, i
 	2. Also the function must read till EOF or BLOCK_SIZE line so that successive read proceeds accordingly
 */
 int writeFileToDisk(FILE *f, int blockNum){
-	int i, line=0;
+	int i, line=0,j;
 	emptyBlock(TEMP_BLOCK);
+	char buffer[32];
+	char s[16];
+	char *instr, *arg1, *arg2;
 	char c;
-	for(i = 0; i < BLOCK_SIZE; i++){
-		fgets(disk[TEMP_BLOCK].word[i],16,f);
+	int line_count=0;
+	for(i = 0; i < BLOCK_SIZE; i=i++){
+		fgets(buffer,32,f);
+		if(buffer[strlen(buffer)-1]=='\n')
+			buffer[strlen(buffer)-1]='\0';
+		instr=strtok(buffer," ");
+		arg1=strtok(NULL," ");
+		arg2=strtok(NULL," ");
+		bzero(s,16);
+		if(arg1!=NULL)
+		{
+			sprintf(s,"%s %s",instr,arg1);
+			for(j=strlen(s);j<16;j++)
+				s[j]='\0';
+			strcpy(disk[TEMP_BLOCK].word[line_count],s);
+			if(arg2!=NULL)
+			{
+				strcpy(s,arg2);
+				for(j=strlen(s);j<16;j++)
+					s[j]='\0';
+				strcpy(disk[TEMP_BLOCK].word[line_count+1],s);
+				
+			}
+			else
+			{
+				for(j=0;j<16;j++)
+					s[j]='\0';
+				strcpy(disk[TEMP_BLOCK].word[line_count+1],s);
+			}
+			line_count=line_count+2;
+		}
+		else
+		{
+			sprintf(s,"%s",instr);
+			for(j=strlen(s);j<=16;j++)
+				strcat(s,"\0");
+			strcpy(disk[TEMP_BLOCK].word[line_count],s);
+			for(j=0;j<16;j++)
+				s[j]='\0';
+			strcpy(disk[TEMP_BLOCK].word[line_count+1],s);
+			line_count=line_count+2;
+			
+		}
+		
 		 /*if(!feof(f)){
 //  		    printf("%d---%s--%d\n", blockNum, disk[TEMP_BLOCK].word[i], line++);   //note:For debugging
 //  		    scanf("%c", &c);
@@ -225,11 +270,14 @@ int writeFileToDisk(FILE *f, int blockNum){
 		 }
 		 else*/				//note: modified here
 		 if(feof(f)){
-			 strcpy(disk[TEMP_BLOCK].word[i], "");
+			 strcpy(disk[TEMP_BLOCK].word[line_count], "");
 			writeToDisk(TEMP_BLOCK,blockNum);
 			return -1;
 		 }
 	}
+	
+	
+	
 	writeToDisk(TEMP_BLOCK,blockNum);
 	return 1;
 }
