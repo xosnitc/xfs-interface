@@ -22,17 +22,19 @@ void createDisk(int format){
 		close(fd);
 		// loadFileToVirtualDisk();		note: commented this line
 		int i=0,j=0;
-		for(j=0; j<NO_OF_FREE_LIST_BLOCKS; j++)
+		
+		for(j=0; j<(NO_OF_FREE_LIST_BLOCKS*BLOCK_SIZE); j++)
 		{
-			if(j == 0)
-	  		for(i=0;i<DATA_START_BLOCK + NO_OF_INIT_BLOCKS ;i++)
-		 		 storeValue(disk[DISK_FREE_LIST].word[i], 1);
+			i=j/BLOCK_SIZE;
+			if( (j>=DATA_START_BLOCK) && (j<(DATA_START_BLOCK+NO_OF_DATA_BLOCKS) ))
+				storeValue(disk[DISK_FREE_LIST+i].word[j], 0);
 			else
-				i=0;
-			for( ;i<BLOCK_SIZE;i++)
-				storeValue(disk[DISK_FREE_LIST + j].word[i], 0);
-			writeToDisk(DISK_FREE_LIST + j, DISK_FREE_LIST+j);
+				storeValue(disk[DISK_FREE_LIST+i].word[j], 1);
 		}
+		
+		for(i=0; i<NO_OF_FREE_LIST_BLOCKS;i++)
+			writeToDisk(DISK_FREE_LIST+i, DISK_FREE_LIST+i);
+			
 		for(j=0; j<NO_OF_FAT_BLOCKS; j++)
 		{
 			for(i=FATENTRY_BASICBLOCK; i<BLOCK_SIZE; i=i+FATENTRY_SIZE)

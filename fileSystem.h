@@ -32,7 +32,7 @@ Declarations of Disk parameters
 
 #define INIT_BASIC_BLOCK 13
 #define INIT_NAME "init.xsm\n"
-#define NO_OF_INIT_BLOCKS 2
+#define NO_OF_INIT_BLOCKS 3
 
 #define DATA_START_BLOCK 16
 #define NO_OF_DATA_BLOCKS 432
@@ -67,7 +67,7 @@ Declarations for files
 Other declarations
 */
 
-#define NO_BLOCKS_TO_COPY 12        //Rest of the blocks have data. Blocks 0-12 need to be copied 
+#define NO_BLOCKS_TO_COPY 15        //Rest of the blocks have data. Blocks 0-12 need to be copied 
 #define EXTRA_BLOCKS	1			// Need a temporary block
 #define TEMP_BLOCK 12				//Temporary block no: starting from 0.
 

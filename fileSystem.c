@@ -306,22 +306,25 @@ int loadExecutableToDisk(char *name){
   The code is first copied to memory copy. If this copying proceeds properly then the memory copy is committed to the disk.
 */
 int loadOSCode(char* fileName){
-  FILE* fp = fopen(fileName, "r");
-  int instrCount;
-  if(fp == NULL){
-     printf("File %s not found.\n", fileName);
-    return -1;
-  }
-  instrCount = 0;
-  while(fgets(disk[OS_STARTUP_CODE].word[instrCount++], 16, fp)){
-    if(instrCount > BLOCK_SIZE){
-      printf("OS Code size exceeds one block\n");
-      return -1;
-    }
-  }
-  writeToDisk(OS_STARTUP_CODE,OS_STARTUP_CODE);
-  close(fp);
-  return 0;
+	FILE* fp = fopen(fileName, "r");
+	int instrCount;
+	if(fp == NULL)
+	{
+		printf("File %s not found.\n", fileName);
+		return -1;
+	}
+	instrCount = 0;
+	while(fgets(disk[OS_STARTUP_CODE].word[instrCount++], 16, fp))
+	{
+		if(instrCount > BLOCK_SIZE)
+		{
+			printf("OS Code size exceeds one block\n");
+			return -1;
+		}
+	}
+	writeToDisk(OS_STARTUP_CODE,OS_STARTUP_CODE);
+	close(fp);
+	return 0;
 }
 
 
@@ -377,20 +380,20 @@ int initializeINIT(){
   This function copies the init program to its proper location on the disk.
 */
 int loadINITCode(char* fileName ){
-  FILE * fp;
-  int locationOfFat, i, j;
-  fp = fopen(fileName, "r");
-  if(fp == NULL){
-    printf("File %s not found.\n", fileName);
-    return -1;
-  }
-  
-  j = writeFileToDisk(fp, INIT_BASIC_BLOCK + 1);		//writing executable file to disk
-  if(j == 1)
-    j = writeFileToDisk(fp, INIT_BASIC_BLOCK + 2);		//if the file is longer than one page.  
-  if(j == 1)
-    writeFileToDisk(fp, INIT_BASIC_BLOCK + 3);
-  close(fp);
-  return 0;
+	FILE * fp;
+	int j;
+	fp = fopen(fileName, "r");
+	if(fp == NULL){
+		printf("File %s not found.\n", fileName);
+		return -1;
+	}
+
+	j = writeFileToDisk(fp, INIT_BASIC_BLOCK);		//writing executable file to disk
+	if(j == 1)
+		j = writeFileToDisk(fp, INIT_BASIC_BLOCK + 1);		//if the file is longer than one page.  
+	if(j == 1)
+		writeFileToDisk(fp, INIT_BASIC_BLOCK + 2);
+	close(fp);
+	return 0;
   
 }

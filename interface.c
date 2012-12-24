@@ -51,7 +51,7 @@ void runCommand(char command[])
 		printf(" remove --os \n\t Removes OS startup code from XFS disk \n\n");
 		printf(" remove --int=timer \n\t Removes the Timer Interrupt routine from XFS disk \n\n");	
 		printf(" remove --int=[1-7] \n\t Removes the specified Interrupt routine from XFS disk \n\n");
-		printf(" remove--exhandler\n\t Removes the exception handler routine from XFS disk \n\n");
+		printf(" remove --exhandler\n\t Removes the exception handler routine from XFS disk \n\n");
 		printf(" ls \n\t List all files\n\n");	
 		printf(" df \n\t Display free list and free space\n\n");
 		printf(" cat <xfs_filename> \n\t to display contents of a file\n\n");
@@ -73,7 +73,7 @@ void runCommand(char command[])
 
 		char *int_command = strtok(arg1, "=");	
 		char *intType = strtok(NULL, "=");
-	    char *fileName = arg2;;
+	    	char *fileName = arg2;;
 	    
 		if(fileName!=NULL)
 			fileName[WORD_SIZE - 1] = '\0';
@@ -116,7 +116,7 @@ void runCommand(char command[])
 
 		char *int_command = strtok(arg1, "=");	
 		char *intType = strtok(NULL, "=");
-	    char *fileName = arg2;;
+	    	char *fileName = arg2;;
 	    
 		if(fileName!=NULL)
 			fileName[WORD_SIZE - 1] = '\0';				
