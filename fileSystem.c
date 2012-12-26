@@ -12,10 +12,12 @@
 */
 void listAllFiles(){
 	int i,j;
+	
+	
 	for(j = FAT ; j < FAT + NO_OF_FAT_BLOCKS ; j++){
 		for(i = FATENTRY_BASICBLOCK ; i < BLOCK_SIZE ; i = i + FATENTRY_SIZE){
 			if( getValue(disk[j].word[i]) != -1 )
-				printf("%s\n",disk[j].word[i-FATENTRY_BASICBLOCK]);
+				printf("Filename: %s   Filesize: %d\n",disk[j].word[i-FATENTRY_BASICBLOCK],getValue(disk[j].word[i-FATENTRY_BASICBLOCK+FATENTRY_FILESIZE]));
 		}
 	}
 }
@@ -282,7 +284,7 @@ int writeFileToDisk(FILE *f, int blockNum, int type){
 int loadExecutableToDisk(char *name){
 	FILE *fileToBeLoaded;
 	int freeBlock[SIZE_EXEFILE_BASIC];
-	int i,j;
+	int i,j,k,file_size=0;
 	fileToBeLoaded = fopen(name, "r");
 	if(fileToBeLoaded == NULL){
 	    printf("File %s not found.\n", name);
@@ -307,18 +309,14 @@ int loadExecutableToDisk(char *name){
 		return -1;
 	}
 	
-	i = FindEmptyFatEntry();		
-	if( i == -1 ){
+	k = FindEmptyFatEntry();		
+	if( k == -1 ){
 		FreeUnusedBlock(freeBlock, SIZE_EXEFILE_BASIC);
 		printf("No free FAT entry found.\n");
 		return -1;			
 	}
-	AddEntryToMemFat(i, name, SIZE_EXEFILE * BLOCK_SIZE, freeBlock[0]);		
-// 	printf("FAT %d\n", i);
-// 	printf("basic %d\n", freeBlock[0]);
-	for(i = FAT; i < FAT + NO_OF_FAT_BLOCKS ; i++){
-		writeToDisk(i,i);				//updating disk fat entry note:check for correctness
-	}
+	
+	
 	for(i = DISK_FREE_LIST ;i < DISK_FREE_LIST + NO_OF_FREE_LIST_BLOCKS; i++)		//updating disk free list in disk
 		writeToDisk(i, i);
 	emptyBlock(TEMP_BLOCK);				//note:need to modify this
@@ -328,11 +326,26 @@ int loadExecutableToDisk(char *name){
 	}
 	storeValue(disk[TEMP_BLOCK].word[i-1],0);
 	writeToDisk(TEMP_BLOCK,freeBlock[0]);
-	j = writeFileToDisk(fileToBeLoaded, freeBlock[1], ASSEMBLY_CODE);		//writing executable file to disk
+	j = writeFileToDisk(fileToBeLoaded, freeBlock[1], ASSEMBLY_CODE);
+	file_size++;		//writing executable file to disk
 	if(j == 1)
+	{
 	  j = writeFileToDisk(fileToBeLoaded, freeBlock[2], ASSEMBLY_CODE);		//if the file is longer than one page.  
+	  file_size++;
+	}
 	if(j == 1)
+	{
 	  writeFileToDisk(fileToBeLoaded, freeBlock[3], ASSEMBLY_CODE);
+	  file_size++;
+	}
+	  
+	AddEntryToMemFat(k, name, file_size * BLOCK_SIZE, freeBlock[0]);		
+ 	//printf("FAT %d\n", i);
+ 	//printf("basic %d\n", freeBlock[0]);
+	for(i = FAT; i < FAT + NO_OF_FAT_BLOCKS ; i++){
+		writeToDisk(i,i);				//updating disk fat entry note:check for correctness
+	}
+	
       close(fileToBeLoaded);
       return 0;
 }
