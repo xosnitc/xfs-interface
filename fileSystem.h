@@ -67,7 +67,7 @@ Declarations for files
 Other declarations
 */
 
-#define NO_BLOCKS_TO_COPY 15        //Rest of the blocks have data. Blocks 0-12 need to be copied 
+#define NO_BLOCKS_TO_COPY 13        //Rest of the blocks have data. Blocks 0-12 need to be copied 
 #define EXTRA_BLOCKS	1			// Need a temporary block
 #define TEMP_BLOCK 12				//Temporary block no: starting from 0.
 
