@@ -31,7 +31,7 @@ Declarations of Disk parameters
 #define NO_OF_FREE_LIST_BLOCKS 1
 
 #define INIT_BASIC_BLOCK 13
-#define INIT_NAME "init.xsm\n"
+#define INIT_NAME "init.xsm"
 #define NO_OF_INIT_BLOCKS 3
 
 #define DATA_START_BLOCK 16

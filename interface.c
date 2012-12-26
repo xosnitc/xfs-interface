@@ -172,8 +172,9 @@ void runCommand(char command[])
 		char *fileName = arg1;;
 		if(fileName!=NULL)
 		{
-			fileName[WORD_SIZE - 1] = '\0';
-			//displayFileContents(fileName);
+			//fileName[WORD_SIZE+1] = '\n';
+			
+			displayFileContents(fileName);
 		}
 		else
 		{

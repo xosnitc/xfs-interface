@@ -12,8 +12,10 @@
 */
 void listAllFiles(){
 	int i,j;
-	for(j = FAT ; j < FAT + NO_OF_FAT_BLOCKS ; j++){
-		for(i = 0 ; i < BLOCK_SIZE ; i = i + FATENTRY_SIZE){
+	for(j = FAT ; j < FAT + NO_OF_FAT_BLOCKS ; j++)
+	{
+		for(i = 0 ; i < BLOCK_SIZE ; i = i + FATENTRY_SIZE)
+		{
 			if( getValue(disk[j].word[i+FATENTRY_BASICBLOCK]) != -1 )
 				printf("Filename: %s   Filesize: %d\n",disk[j].word[i+FATENTRY_FILENAME],getValue(disk[j].word[i+FATENTRY_FILESIZE]));
 		}
@@ -30,8 +32,10 @@ void listAllFiles(){
 int CheckRepeatedName(char *name){
 	int i,j;
 	//name = strcat(name, "\n");
-	for(j = FAT ; j < FAT + NO_OF_FAT_BLOCKS ; j++){
-		for(i = FATENTRY_FILENAME ; i < BLOCK_SIZE ; i = i + FATENTRY_SIZE)	{
+	for(j = FAT ; j < FAT + NO_OF_FAT_BLOCKS ; j++)
+	{
+		for(i = FATENTRY_FILENAME ; i < BLOCK_SIZE ; i = i + FATENTRY_SIZE)
+		{
 			if(strcmp(disk[j].word[i],name) == 0 && getValue(disk[j].word[i]) != -1)		//note: modified here
 				return (((j - FAT) * BLOCK_SIZE) + i);
 		}
@@ -218,7 +222,8 @@ int writeFileToDisk(FILE *f, int blockNum, int type){
 		char buffer[32],s[16];
 		char *instr, *arg1, *arg2;
 		int line_count=0;
-		for(i = 0; i < BLOCK_SIZE; i=i++){
+		for(i = 0; i < (BLOCK_SIZE/2); i=i++)
+		{
 			fgets(buffer,32,f);
 			if(buffer[strlen(buffer)-1]=='\n')
 				buffer[strlen(buffer)-1]='\0';
@@ -288,7 +293,7 @@ int loadExecutableToDisk(char *name){
 	    printf("File %s not found.\n", name);
 	    return -1;
 	  }
-	name = strcat(name, "\n");  //NOTE:   modified here
+	//name = strcat(name, "\n");  //NOTE:   modified here
 	if(fileToBeLoaded == NULL){
 		printf("The file could not be opened");
 		return -1;
@@ -319,11 +324,13 @@ int loadExecutableToDisk(char *name){
 		writeToDisk(i, i);
 	emptyBlock(TEMP_BLOCK);				//note:need to modify this
 	
-	for( i = 1 ; i < SIZE_EXEFILE_BASIC ; i++ ){
+	for( i = 1 ; i < SIZE_EXEFILE_BASIC ; i++ )
+	{
 		storeValue(disk[TEMP_BLOCK].word[i-1],freeBlock[i]); 
+		//printf("\n%d",getValue(disk[TEMP_BLOCK].word[i-1]));
 	}
-	storeValue(disk[TEMP_BLOCK].word[i-1],0);
 	writeToDisk(TEMP_BLOCK,freeBlock[0]);
+	
 	j = writeFileToDisk(fileToBeLoaded, freeBlock[1], ASSEMBLY_CODE);
 	file_size++;		//writing executable file to disk
 	if(j == 1)
@@ -331,11 +338,34 @@ int loadExecutableToDisk(char *name){
 	  j = writeFileToDisk(fileToBeLoaded, freeBlock[2], ASSEMBLY_CODE);		//if the file is longer than one page.  
 	  file_size++;
 	}
+	else
+	{
+		emptyBlock(TEMP_BLOCK);
+		readFromDisk(TEMP_BLOCK,freeBlock[0]);
+		storeValue(disk[TEMP_BLOCK].word[1],0);
+		writeToDisk(TEMP_BLOCK,freeBlock[0]);
+	}
 	if(j == 1)
 	{
 	  writeFileToDisk(fileToBeLoaded, freeBlock[3], ASSEMBLY_CODE);
 	  file_size++;
 	}
+	else
+	{
+		emptyBlock(TEMP_BLOCK);
+		readFromDisk(TEMP_BLOCK,freeBlock[0]);
+		storeValue(disk[TEMP_BLOCK].word[2],0);
+		writeToDisk(TEMP_BLOCK,freeBlock[0]);
+	}
+	emptyBlock(TEMP_BLOCK);
+	readFromDisk(TEMP_BLOCK,freeBlock[0]);	
+	//storeValue(disk[TEMP_BLOCK].word[i-1],0);
+	
+	/*for( i = 0 ; i < SIZE_EXEFILE ; i++ )
+	{
+		printf("\n%d",getValue(disk[TEMP_BLOCK].word[i]));
+	}*/
+	writeToDisk(TEMP_BLOCK,freeBlock[0]);
 	  
 	AddEntryToMemFat(k, name, file_size * BLOCK_SIZE, freeBlock[0]);		
  	//printf("FAT %d\n", i);
@@ -450,5 +480,47 @@ int loadINITCode(char* fileName ){
   
 }
 
+
+/*
+  This function displays the content of the files stored in the disk.
+*/
+void displayFileContents(char *name)
+{
+	int i,j,k,l;
+	int blk[SIZE_EXEFILE];
+	for(j = FAT; j < FAT+NO_OF_FAT_BLOCKS; j++)
+	{
+		//for(i = 0 ; i < BLOCK_SIZE ; i = i + FATENTRY_SIZE)
+		for(i = 0 ; i < 20 ; i = i + FATENTRY_SIZE)
+		{
+			//printf("%d : %s-",strlen(disk[j].word[i+FATENTRY_FILENAME]),disk[j].word[i+FATENTRY_FILENAME]);
+			if(strcmp(disk[j].word[i+FATENTRY_FILENAME],name) == 0 && getValue(disk[j].word[i+FATENTRY_BASICBLOCK]) != -1)		
+			{
+				emptyBlock(TEMP_BLOCK);	
+				readFromDisk(TEMP_BLOCK,getValue(disk[j].word[i+FATENTRY_BASICBLOCK]));
+				for(k = 0; k < SIZE_EXEFILE; k++)
+				{
+					blk[k]=getValue(disk[TEMP_BLOCK].word[k]);
+					printf("%d\n",blk[k]);	
+				}
+				for(k = 0; k < SIZE_EXEFILE; k++)
+				{
+					if(blk[k]!=0)
+					{
+						emptyBlock(TEMP_BLOCK);
+						readFromDisk(TEMP_BLOCK,blk[k]);
+						for(l=0;l<BLOCK_SIZE;l++)
+						{
+							printf("%s   ",disk[TEMP_BLOCK].word[l]);
+						}
+					}
+				}
+				
+				//for(k=0;k<16;k++)
+				//printf("%s \n",disk[TEMP_BLOCK].word[k]);
+			}
+		}
+	}
+}
 
 
