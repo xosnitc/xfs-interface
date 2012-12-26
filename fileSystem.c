@@ -12,12 +12,10 @@
 */
 void listAllFiles(){
 	int i,j;
-	
-	
 	for(j = FAT ; j < FAT + NO_OF_FAT_BLOCKS ; j++){
-		for(i = FATENTRY_BASICBLOCK ; i < BLOCK_SIZE ; i = i + FATENTRY_SIZE){
-			if( getValue(disk[j].word[i]) != -1 )
-				printf("Filename: %s   Filesize: %d\n",disk[j].word[i-FATENTRY_BASICBLOCK],getValue(disk[j].word[i-FATENTRY_BASICBLOCK+FATENTRY_FILESIZE]));
+		for(i = 0 ; i < BLOCK_SIZE ; i = i + FATENTRY_SIZE){
+			if( getValue(disk[j].word[i+FATENTRY_BASICBLOCK]) != -1 )
+				printf("Filename: %s   Filesize: %d\n",disk[j].word[i+FATENTRY_FILENAME],getValue(disk[j].word[i+FATENTRY_FILESIZE]));
 		}
 	}
 }
@@ -451,3 +449,6 @@ int loadINITCode(char* fileName ){
 	return 0;
   
 }
+
+
+
