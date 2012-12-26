@@ -159,4 +159,9 @@ int initializeINIT();
   This function copies the init program to its proper location on the disk.
 */
 int loadINITCode(char* name);
+
+/*
+  This function displays the content of the files stored in the disk.
+*/
+void displayFileContents(char *name);
 #endif
