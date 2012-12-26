@@ -21,7 +21,8 @@ void cli()
 		scanf("%c",&c);
   	}
   	command[i] = '\0';
-  	runCommand(command);
+	if(command[0]!='\0')
+  		runCommand(command);
   }
 
 }
@@ -201,7 +202,6 @@ void runCommand(char command[])
 	}						
 	else if (strcmp(arg1,"exit")==0)		//Exits the interface
 		exit(0);
-		
 	else
 		printf("Unknown command \"%s\". See \"help\" for more information",name);
 }
