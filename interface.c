@@ -198,7 +198,7 @@ void runCommand(char command[])
 			int endBlock = atoi(arg2);	
 			char *fileName = arg3;			
 			fileName[WORD_SIZE - 1] = '\0';
-			//copyBlockstoFile (startBlock,endBlock,fileName);
+			copyBlocksToFile (startBlock,endBlock,fileName);
 		}	
 	}						
 	else if (strcmp(arg1,"exit")==0)		//Exits the interface

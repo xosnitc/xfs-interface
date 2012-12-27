@@ -106,7 +106,7 @@ int removeFatEntry(int locationOfFat){
 	int blockNumber = FAT + locationOfFat / BLOCK_SIZE;
 	int startWordNumber = locationOfFat % BLOCK_SIZE;
 	for( i = startWordNumber ; i < startWordNumber + FATENTRY_SIZE ; i++ ){
-		strcpy(disk[blockNumber].word[i],"");
+		strcpy(disk[blockNumber].word[i],"\0");
 	}
 	storeValue(disk[blockNumber].word[startWordNumber + FATENTRY_BASICBLOCK], -1);
 	return 0;
@@ -130,7 +130,6 @@ int deleteExecutableFromDisk(char *name)
 	  return 0;
 	}
 	locationOfFat = CheckRepeatedName(name);
-	printf("%d\n",locationOfFat);
 	if(locationOfFat >= FAT_SIZE){
 		printf("File not found\n");
 		return -1;
@@ -493,8 +492,7 @@ void displayFileContents(char *name)
 	int blk[SIZE_EXEFILE];
 	for(j = FAT; j < FAT+NO_OF_FAT_BLOCKS; j++)
 	{
-		//for(i = 0 ; i < BLOCK_SIZE ; i = i + FATENTRY_SIZE)
-		for(i = 0 ; i < 20 ; i = i + FATENTRY_SIZE)
+		for(i = 0 ; i < BLOCK_SIZE ; i = i + FATENTRY_SIZE)
 		{
 			if(strcmp(disk[j].word[i+FATENTRY_FILENAME],name) == 0 && getValue(disk[j].word[i+FATENTRY_BASICBLOCK]) != -1)		
 			{
@@ -516,12 +514,34 @@ void displayFileContents(char *name)
 						}
 					}
 				}
-				
-				//for(k=0;k<16;k++)
-				//printf("%s \n",disk[TEMP_BLOCK].word[k]);
 			}
 		}
 	}
+}
+
+void copyBlocksToFile (int startblock,int endblock,char *filename)
+{
+	int i;
+	FILE *fp;
+	fp = fopen(filename,"w");
+	if(fp == NULL)
+	{
+		printf("File %s not found.\n", filename);
+		//return -1;
+	}
+	else
+	{
+		for(i = startblock; i <= endblock; i++)
+		{
+			emptyBlock(TEMP_BLOCK);
+			readFromDisk(TEMP_BLOCK,i);
+			for(j=0;j<BLOCK_SIZE;j++)
+			{
+				fprintf(fp,"%d\n",getValue(disk[TEMP_BLOCK].word[j]));
+			}
+		}
+	}
+	fclose(fp);
 }
 
 

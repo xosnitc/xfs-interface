@@ -164,4 +164,10 @@ int loadINITCode(char* name);
   This function displays the content of the files stored in the disk.
 */
 void displayFileContents(char *name);
+
+/*
+  This function copies the contents of the disk starting from <startBlock> to <endBlock> to a unix file.
+*/
+void copyBlocksToFile (int startBlock,int endBlock,char *name);
+
 #endif
