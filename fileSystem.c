@@ -537,7 +537,7 @@ void copyBlocksToFile (int startblock,int endblock,char *filename)
 			readFromDisk(TEMP_BLOCK,i);
 			for(j=0;j<BLOCK_SIZE;j++)
 			{
-				fprintf(fp,"%d\n",getValue(disk[TEMP_BLOCK].word[j]));
+				fprintf(fp,"%s\n",disk[TEMP_BLOCK].word[j]);
 			}
 		}
 	}

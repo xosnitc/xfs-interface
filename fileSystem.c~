@@ -521,7 +521,7 @@ void displayFileContents(char *name)
 
 void copyBlocksToFile (int startblock,int endblock,char *filename)
 {
-	int i;
+	int i,j;
 	FILE *fp;
 	fp = fopen(filename,"w");
 	if(fp == NULL)

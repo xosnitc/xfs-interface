@@ -15,19 +15,24 @@ void emptyBlock(int blockNo) {
 /*
   char* to int conversion
 */
-int getValue(char* str ) {
-	return *((int*)str);
+int getValue(char* str ) 
+{
+	//return *((int*)str);
+	return atoi(str);
 }
+
 
 /*
   int to char* conversion
 */
-void storeValue(char *str, int num) {
-	char *c = (char*)&num;
+void storeValue(char *str, int num) 
+{
+	/*char *c = (char*)&num;
 	str[0] = *c;
 	str[1] = *(c + 1);
 	str[2] = *(c + 2);
-	str[3] = *(c + 3);
+	str[3] = *(c + 3);*/
+	sprintf(str,"%d",num);
 }
 
 
