@@ -124,7 +124,7 @@ int removeFatEntry(int locationOfFat){
 int deleteExecutableFromDisk(char *name)
 {
 	int locationOfFat,i,blockAddresses[SIZE_EXEFILE_BASIC];   //0-basic block , 1,2,3-code+data blocks
-	name = strcat(name, "\n");
+	//name = strcat(name, "\n");
 	if(strcmp(name, INIT_NAME) == 0){
 	  printf("Init cannot be removed\n");
 	  return 0;

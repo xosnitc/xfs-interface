@@ -114,7 +114,7 @@ void runCommand(char command[])
 	{
 		arg1 = strtok(NULL, " ");
 		arg2 = strtok(NULL, " ");	
-
+		
 		char *int_command = strtok(arg1, "=");	
 		char *intType = strtok(NULL, "=");
 	    	char *fileName = arg2;;
