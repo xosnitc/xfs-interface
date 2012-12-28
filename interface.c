@@ -153,12 +153,12 @@ void runCommand(char command[])
 		{
 			if(strcmp(intType,"timer")==0)
 				{
-					deleteTimerFromoDisk();				//removes Timer interrupt routine from disk.
+					deleteTimerFromDisk();				//removes Timer interrupt routine from disk.
 				}
 			else
 			{
 				int intNo = atoi(intType);
-				//deleteIntCode(intNo);				//removes Int Code from disk.
+				deleteIntCode(intNo);				//removes Int Code from disk.
 			}
 		}
 		else if (strcmp(arg1,"--exhandler")==0)

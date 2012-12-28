@@ -194,4 +194,9 @@ int deleteOSCodeFromDisk();
   This function deletes the Timer Interrupt from the disk.
 */
 int deleteTimerFromDisk();
+
+/*
+  This function deletes the Interrupt <intNo> from the disk.
+*/
+int deleteIntCode(int intNo);	
 #endif

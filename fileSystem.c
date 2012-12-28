@@ -179,6 +179,15 @@ int deleteTimerFromDisk()
 	return 0;
 }
 
+/*
+  This function deletes the Interrupt <intNo> from the disk.
+*/
+int deleteIntCode(int intNo)
+{
+	emptyBlock(TEMP_BLOCK);
+	writeToDisk(TEMP_BLOCK,intNo + INT1 -1);
+	return 0;
+}
 
 /*
   This function returns the address of a free block on the disk.
