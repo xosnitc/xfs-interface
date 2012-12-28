@@ -180,4 +180,10 @@ void displayFileContents(char *name);
 */
 void copyBlocksToFile (int startBlock,int endBlock,char *name);
 
+/*
+  This function deletes the INIT code from the disk.
+*/
+int deleteINITFromDisk();
+
+
 #endif

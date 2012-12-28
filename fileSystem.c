@@ -147,7 +147,17 @@ int deleteExecutableFromDisk(char *name)
 		return 0;	
 }
 
-
+/*
+  This function deletes the INIT code from the disk.
+*/
+int deleteINITFromDisk()
+{
+	emptyBlock(TEMP_BLOCK);
+	writeToDisk(TEMP_BLOCK,INIT_BASIC_BLOCK);
+	writeToDisk(TEMP_BLOCK,INIT_BASIC_BLOCK+1);
+	writeToDisk(TEMP_BLOCK,INIT_BASIC_BLOCK+2);
+	return 0;
+}
 
 /*
   This function returns the address of a free block on the disk.
@@ -381,6 +391,28 @@ int loadExecutableToDisk(char *name){
 }
 
 
+/*
+  This function copies the init program to its proper location on the disk.
+*/
+int loadINITCode(char* fileName ){
+	FILE * fp;
+	int j;
+	fp = fopen(fileName, "r");
+	if(fp == NULL)
+	{
+		printf("File %s not found.\n", fileName);
+		return -1;
+	}
+
+	j = writeFileToDisk(fp, INIT_BASIC_BLOCK, ASSEMBLY_CODE);		//writing executable file to disk
+	if(j == 1)
+		j = writeFileToDisk(fp, INIT_BASIC_BLOCK + 1, ASSEMBLY_CODE);		//if the file is longer than one page.  
+	if(j == 1)
+		writeFileToDisk(fp, INIT_BASIC_BLOCK + 2, ASSEMBLY_CODE);
+	close(fp);
+	return 0;
+  
+}
 
 /*
   This function loads the OS startup code specified by the first arguement to its appropriate location on disk.
@@ -505,28 +537,6 @@ int initializeINIT()
 }
 
 
-/*
-  This function copies the init program to its proper location on the disk.
-*/
-int loadINITCode(char* fileName ){
-	FILE * fp;
-	int j;
-	fp = fopen(fileName, "r");
-	if(fp == NULL)
-	{
-		printf("File %s not found.\n", fileName);
-		return -1;
-	}
-
-	j = writeFileToDisk(fp, INIT_BASIC_BLOCK, ASSEMBLY_CODE);		//writing executable file to disk
-	if(j == 1)
-		j = writeFileToDisk(fp, INIT_BASIC_BLOCK + 1, ASSEMBLY_CODE);		//if the file is longer than one page.  
-	if(j == 1)
-		writeFileToDisk(fp, INIT_BASIC_BLOCK + 2, ASSEMBLY_CODE);
-	close(fp);
-	return 0;
-  
-}
 
 
 /*
@@ -586,5 +596,8 @@ void copyBlocksToFile (int startblock,int endblock,char *filename)
 	}
 	fclose(fp);
 }
+
+
+
 
 

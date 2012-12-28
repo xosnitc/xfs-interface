@@ -106,9 +106,8 @@ void runCommand(char command[])
 		}
 		else if (strcmp(arg1,"--exhandler")==0) 
 			{
-				loadExHandlerToDisk(fileName);
+				loadExHandlerToDisk(fileName);		 //loads exception handler routine to disk.
 			}
-			//loadExHandlerToDisk(fileName);		 //loads exception handler routine to disk.
 		else
 			printf("Invalid argument \"%s\" for load. See \"help\" for more information",arg1);
 	}	
@@ -134,7 +133,9 @@ void runCommand(char command[])
 			deleteExecutableFromDisk(fileName);	 	//removes executable file fron disk.
 		}
 		else if (strcmp(arg1,"--init")==0)	
-			{}//deleteINITFromDisk();			 	//removes init code from disk
+			{
+				deleteINITFromDisk();			 	//removes init code from disk
+			}
 		else if (strcmp(arg1,"--data")==0) 
 		{
 			if(fileName==NULL)
@@ -145,7 +146,9 @@ void runCommand(char command[])
 			//deleteDataFromDisk(fileName);			 //removes data file from disk..		
 		}
 		else if (strcmp(arg1,"--os")==0)
-			{}//deleteOSCodeFromDisk();			 	//removes OS code from disk.		
+			{
+				deleteOSCodeFromDisk();			 	//removes OS code from disk.		
+			}
 		else if (strcmp(arg1,"--int")==0)
 		{
 			if(strcmp(intType,"timer")==0)
