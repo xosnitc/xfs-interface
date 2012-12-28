@@ -173,8 +173,8 @@ void runCommand(char command[])
 		listAllFiles();
 		
 	else if (strcmp(name,"df")==0)		//Lists disk free list
-		{}//listAllFiles();
-		
+		displayDiskFreeList();
+				
 	else if (strcmp(name,"cat")==0)		//Displays contents of a file
 	{
 		arg1 = strtok(NULL, " ");

@@ -42,7 +42,7 @@ Declarations of Disk parameters
 
 #define NO_OF_DISK_BLOCKS 512
 
-#define DISK_SIZE (TOTAL_DISK_BLOCKS * BLOCK_SIZE)
+#define DISK_SIZE (NO_OF_DISK_BLOCKS * BLOCK_SIZE)
 
 
 /*
@@ -204,5 +204,10 @@ int deleteIntCode(int intNo);
   This function deletes the Exception Handler from the disk.
 */
 int deleteExHandlerFromDisk();
+
+/*
+  This function displays disk free list and the amount of free space in the disk.
+*/
+void displayDiskFreeList();
 
 #endif

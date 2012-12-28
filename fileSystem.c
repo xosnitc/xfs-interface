@@ -350,7 +350,9 @@ int loadExecutableToDisk(char *name){
 		printf("The file could not be opened");
 		return -1;
 	}
-	for(i = 0; i < SIZE_EXEFILE_BASIC ; i++){
+	
+	for(i = 0; i < SIZE_EXEFILE_BASIC ; i++)
+	{
 		if((freeBlock[i] = FindFreeBlock()) == -1){
 				printf("not sufficient space in disk to hold a new file.\n");
 				FreeUnusedBlock(freeBlock, SIZE_EXEFILE_BASIC);
@@ -408,6 +410,7 @@ int loadExecutableToDisk(char *name){
 		readFromDisk(TEMP_BLOCK,freeBlock[0]);
 		storeValue(disk[TEMP_BLOCK].word[2],0);
 		writeToDisk(TEMP_BLOCK,freeBlock[0]);
+		
 	}
 	emptyBlock(TEMP_BLOCK);
 	readFromDisk(TEMP_BLOCK,freeBlock[0]);	
@@ -637,7 +640,24 @@ void copyBlocksToFile (int startblock,int endblock,char *filename)
 	fclose(fp);
 }
 
-
+/*
+  This function displays disk free list and the amount of free space in the disk.
+*/
+void displayDiskFreeList()
+{
+	int i,j,no_of_free_blocks=0;
+	for(j = 0; j < NO_OF_FREE_LIST_BLOCKS; j++)
+	{
+		for(i = 0; i < BLOCK_SIZE; i++)
+		{
+			printf("%d - %s  \n",i,disk[DISK_FREE_LIST+j].word[i]);
+			if(getValue(disk[DISK_FREE_LIST+j].word[i])==0)
+				no_of_free_blocks++;
+		}
+	}
+	printf("\nNo of Free Blocks = %d",no_of_free_blocks);
+	printf("\nTotal no of Blocks = %d",NO_OF_DISK_BLOCKS);
+}
 
 
 
