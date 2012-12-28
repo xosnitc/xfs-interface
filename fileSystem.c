@@ -388,22 +388,20 @@ int loadExecutableToDisk(char *name){
 */
 int loadOSCode(char* fileName){
 	FILE* fp = fopen(fileName, "r");
-	int instrCount;
+	int j;
 	if(fp == NULL)
 	{
 		printf("File %s not found.\n", fileName);
 		return -1;
 	}
-	instrCount = 0;
-	while(fgets(disk[OS_STARTUP_CODE].word[instrCount++], 16, fp))
+	
+	j = writeFileToDisk(fp, OS_STARTUP_CODE, ASSEMBLY_CODE);
+	if(j==1)
 	{
-		if(instrCount > BLOCK_SIZE)
-		{
-			printf("OS Code size exceeds one block\n");
-			return -1;
-		}
+		printf("OS Code exceeds one block\n");
+		emptyBlock(TEMP_BLOCK);
+		writeToDisk(TEMP_BLOCK,OS_STARTUP_CODE);
 	}
-	writeToDisk(OS_STARTUP_CODE,OS_STARTUP_CODE);
 	close(fp);
 	return 0;
 }
@@ -467,7 +465,8 @@ int loadINITCode(char* fileName ){
 	FILE * fp;
 	int j;
 	fp = fopen(fileName, "r");
-	if(fp == NULL){
+	if(fp == NULL)
+	{
 		printf("File %s not found.\n", fileName);
 		return -1;
 	}
@@ -507,7 +506,7 @@ void displayFileContents(char *name)
 			for(l=0;l<BLOCK_SIZE;l++)
 			{
 				if(strcmp(disk[TEMP_BLOCK].word[l],"\0")!=0)
-					printf("%d-%s   \n",l,disk[TEMP_BLOCK].word[l]);
+					printf("%d - %s   \n",l,disk[TEMP_BLOCK].word[l]);
 			}
 		}
 	}
