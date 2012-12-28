@@ -454,6 +454,30 @@ int loadTimerCode(char* fileName)
 }
 
 /*
+  This function copies the exception handler to the proper location on the disk.
+*/
+int loadExHandlerToDisk(char* fileName)
+{
+	FILE* fp = fopen(fileName, "r");
+	int j;
+	if(fp == NULL)
+	{
+		printf("File %s not found.\n", fileName);
+		return -1;
+	}
+	j = writeFileToDisk(fp, EX_HANDLER, ASSEMBLY_CODE);
+	if(j==1)
+	{
+		printf("Exception Handler exceeds one block\n");
+		emptyBlock(TEMP_BLOCK);
+		writeToDisk(TEMP_BLOCK,EX_HANDLER);
+	}
+	close(fp);
+	return 0;
+}
+
+
+/*
   This function initialises the fat and basic block entries for the init process.
   The location of init process on the disk is fixed.
 */

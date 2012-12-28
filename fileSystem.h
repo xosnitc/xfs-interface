@@ -156,6 +156,11 @@ int loadIntCode(char* name, int intNo);
 int loadTimerCode(char* name);
 
 /*
+  This function copies the exception handler to the proper location on the disk.
+*/
+int loadExHandlerToDisk(char* name);
+
+/*
   This function initialises the fat and basic block entries for the init process.
 */
 int initializeINIT();

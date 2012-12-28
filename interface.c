@@ -98,7 +98,6 @@ void runCommand(char command[])
 			{
 				loadTimerCode(fileName);
 			}
-				//loadTimerToDisk(fileName);
 			else
 			{
 				int intNo = atoi(intType);
@@ -106,7 +105,9 @@ void runCommand(char command[])
 			}
 		}
 		else if (strcmp(arg1,"--exhandler")==0) 
-			{}
+			{
+				loadExHandlerToDisk(fileName);
+			}
 			//loadExHandlerToDisk(fileName);		 //loads exception handler routine to disk.
 		else
 			printf("Invalid argument \"%s\" for load. See \"help\" for more information",arg1);
