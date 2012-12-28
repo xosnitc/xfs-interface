@@ -410,23 +410,24 @@ int loadOSCode(char* fileName){
 /*
   This function copies the interrupts to the proper location on the disk.
 */
-int loadIntCode(char* fileName, int intNo){
-  FILE* fp = fopen(fileName, "r");
-  int instrCount;
-  if(fp == NULL){
-     printf("File %s not found.\n", fileName);
-    return -1;
-  }
-  instrCount = 0;
-  while(fgets(disk[intNo + INT1 - 1].word[instrCount++], 16, fp)){
-    if(instrCount > BLOCK_SIZE){
-      printf("Interrupt Code size exceeds one block\n");
-      return -1;
-    }
-  }
-  writeToDisk(intNo + INT1 - 1 ,intNo + INT1 - 1);
-  close(fp);
-  return 0;
+int loadIntCode(char* fileName, int intNo)
+{
+	FILE* fp = fopen(fileName, "r");
+	int j;
+	if(fp == NULL)
+	{
+		printf("File %s not found.\n", fileName);
+		return -1;
+	}
+	j = writeFileToDisk(fp, intNo + INT1 - 1, ASSEMBLY_CODE);
+	if(j==1)
+	{
+		printf("Interrupt Code exceeds one block\n");
+		emptyBlock(TEMP_BLOCK);
+		writeToDisk(TEMP_BLOCK,intNo + INT1 -1);
+	}
+	close(fp);
+	return 0;
 }
 
 

@@ -4,7 +4,8 @@
 /*
  This function empties a block as specified by the first arguement in the memory copy of the disk file.
 */
-void emptyBlock(int blockNo) {
+void emptyBlock(int blockNo) 
+{
 	int i;
 	for(i = 0 ; i < BLOCK_SIZE ; i++)
 	{
