@@ -488,7 +488,7 @@ int loadINITCode(char* fileName ){
 */
 void displayFileContents(char *name)
 {
-	int i,j,k,l;
+	int i,j,k,l,flag=0;
 	int blk[SIZE_EXEFILE];
 	for(j = FAT; j < FAT+NO_OF_FAT_BLOCKS; j++)
 	{
@@ -510,13 +510,20 @@ void displayFileContents(char *name)
 						readFromDisk(TEMP_BLOCK,blk[k]);
 						for(l=0;l<BLOCK_SIZE;l++)
 						{
-							printf("%d-%s   \n",l,disk[TEMP_BLOCK].word[l]);
+							if(strcmp(disk[TEMP_BLOCK].word[l],"\0")!=0)
+								printf("%d-%s   \n",l,disk[TEMP_BLOCK].word[l]);
 						}
 					}
 				}
+				flag=1;
 			}
+			if(flag==1)
+				return;
+			
 		}
 	}
+	if(flag==0)
+		printf("File %s not found",name);
 }
 
 void copyBlocksToFile (int startblock,int endblock,char *filename)

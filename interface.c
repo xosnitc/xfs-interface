@@ -46,13 +46,13 @@ void runCommand(char command[])
 		printf(" load --int=timer <filename>\n\t Loads Timer Interrupt routine to XFS disk \n\n");		
 		printf(" load --int=[1-7] <filename>\n\t Loads the specified Interrupt routine to XFS disk \n\n");
 		printf(" load --exhandler <filename>  \n\t Loads exception handler routine to XFS disk \n\n");
-		printf(" remove --exec <filename>\n\t Removes an executable file from XFS disk \n\n");
-		printf(" remove --init  <unix_filename> \n\t Removes INIT code from XFS disk \n\n");	
-		printf(" remove --data	<filename>\n\t Removes a data file from XFS disk \n\n");
-		printf(" remove --os \n\t Removes OS startup code from XFS disk \n\n");
-		printf(" remove --int=timer \n\t Removes the Timer Interrupt routine from XFS disk \n\n");	
-		printf(" remove --int=[1-7] \n\t Removes the specified Interrupt routine from XFS disk \n\n");
-		printf(" remove --exhandler\n\t Removes the exception handler routine from XFS disk \n\n");
+		printf(" rm --exec <filename>\n\t Removes an executable file from XFS disk \n\n");
+		printf(" rm --init  <unix_filename> \n\t Removes INIT code from XFS disk \n\n");	
+		printf(" rm --data	<filename>\n\t Removes a data file from XFS disk \n\n");
+		printf(" rm --os \n\t Removes OS startup code from XFS disk \n\n");
+		printf(" rm --int=timer \n\t Removes the Timer Interrupt routine from XFS disk \n\n");	
+		printf(" rm --int=[1-7] \n\t Removes the specified Interrupt routine from XFS disk \n\n");
+		printf(" rm --exhandler\n\t Removes the exception handler routine from XFS disk \n\n");
 		printf(" ls \n\t List all files\n\n");	
 		printf(" df \n\t Display free list and free space\n\n");
 		printf(" cat <xfs_filename> \n\t to display contents of a file\n\n");
@@ -110,7 +110,7 @@ void runCommand(char command[])
 			printf("Invalid argument \"%s\" for load. See \"help\" for more information",arg1);
 	}	
 	
-	else if (strcmp(name,"remove")==0) 	//removes files to XFS disk.
+	else if (strcmp(name,"rm")==0) 	//removes files to XFS disk.
 	{
 		arg1 = strtok(NULL, " ");
 		arg2 = strtok(NULL, " ");	
@@ -125,7 +125,7 @@ void runCommand(char command[])
 		{
 			if(fileName==NULL)
 			{
-				printf("Missing <filename> for remove. See \"help\" for more information");
+				printf("Missing <filename> for rm. See \"help\" for more information");
 				return;
 			}
 			deleteExecutableFromDisk(fileName);	 	//removes executable file fron disk.
@@ -136,7 +136,7 @@ void runCommand(char command[])
 		{
 			if(fileName==NULL)
 			{
-				printf("Missing <filename> for remove. See \"help\" for more information");
+				printf("Missing <filename> for rm. See \"help\" for more information");
 				return;
 			}
 			//deleteDataFromDisk(fileName);			 //removes data file from disk..		
@@ -157,7 +157,7 @@ void runCommand(char command[])
 		else if (strcmp(arg1,"--exhandler")==0)
 			{}//deleteExHandlerFromDisk();			 //removes exception handler routine from disk.			
 		else
-			printf("Invalid argument \"%s\" for remove. See \"help\" for more information",arg1);
+			printf("Invalid argument \"%s\" for rm. See \"help\" for more information",arg1);
 	}	
 	
 	else if (strcmp(name,"ls")==0)		//Lists all files.
