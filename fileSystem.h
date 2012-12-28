@@ -190,4 +190,8 @@ int deleteINITFromDisk();
 */
 int deleteOSCodeFromDisk();
 
+/*
+  This function deletes the Timer Interrupt from the disk.
+*/
+int deleteTimerFromDisk();
 #endif

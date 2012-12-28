@@ -170,6 +170,17 @@ int deleteOSCodeFromDisk()
 }
 
 /*
+  This function deletes the Timer Interrupt from the disk.
+*/
+int deleteTimerFromDisk()
+{
+	emptyBlock(TEMP_BLOCK);
+	writeToDisk(TEMP_BLOCK,TIMERINT);
+	return 0;
+}
+
+
+/*
   This function returns the address of a free block on the disk.
   The value returned will be the relative word address of the corresponding entry in the free list.
 */

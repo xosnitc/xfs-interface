@@ -153,7 +153,7 @@ void runCommand(char command[])
 		{
 			if(strcmp(intType,"timer")==0)
 				{
-					deleteTimerToDisk();				//removes Timer interrupt routine from disk.
+					deleteTimerFromoDisk();				//removes Timer interrupt routine from disk.
 				}
 			else
 			{
