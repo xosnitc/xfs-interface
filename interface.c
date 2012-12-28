@@ -95,7 +95,9 @@ void runCommand(char command[])
 		else if (strcmp(arg1,"--int")==0)
 		{
 			if(strcmp(intType,"timer")==0)
-				{}
+			{
+				loadTimerCode(fileName);
+			}
 				//loadTimerToDisk(fileName);
 			else
 			{

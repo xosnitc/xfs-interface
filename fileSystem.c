@@ -430,6 +430,28 @@ int loadIntCode(char* fileName, int intNo)
 	return 0;
 }
 
+/*
+  This function copies the timer interrupt to the proper location on the disk.
+*/
+int loadTimerCode(char* fileName)
+{
+	FILE* fp = fopen(fileName, "r");
+	int j;
+	if(fp == NULL)
+	{
+		printf("File %s not found.\n", fileName);
+		return -1;
+	}
+	j = writeFileToDisk(fp, TIMERINT, ASSEMBLY_CODE);
+	if(j==1)
+	{
+		printf("Timer Interrupt Code exceeds one block\n");
+		emptyBlock(TEMP_BLOCK);
+		writeToDisk(TEMP_BLOCK,TIMERINT);
+	}
+	close(fp);
+	return 0;
+}
 
 /*
   This function initialises the fat and basic block entries for the init process.

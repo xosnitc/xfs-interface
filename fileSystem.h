@@ -151,6 +151,11 @@ int loadOSCode(char* name);
 int loadIntCode(char* name, int intNo);
 
 /*
+  This function copies the timer interrupt to the proper location on the disk.
+*/
+int loadTimerCode(char* name);
+
+/*
   This function initialises the fat and basic block entries for the init process.
 */
 int initializeINIT();
