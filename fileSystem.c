@@ -160,6 +160,16 @@ int deleteINITFromDisk()
 }
 
 /*
+  This function deletes the OS code from the disk.
+*/
+int deleteOSCodeFromDisk()
+{
+	emptyBlock(TEMP_BLOCK);
+	writeToDisk(TEMP_BLOCK,OS_STARTUP_CODE);
+	return 0;
+}
+
+/*
   This function returns the address of a free block on the disk.
   The value returned will be the relative word address of the corresponding entry in the free list.
 */

@@ -185,5 +185,9 @@ void copyBlocksToFile (int startBlock,int endBlock,char *name);
 */
 int deleteINITFromDisk();
 
+/*
+  This function deletes the OS code from the disk.
+*/
+int deleteOSCodeFromDisk();
 
 #endif

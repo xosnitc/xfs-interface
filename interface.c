@@ -152,8 +152,9 @@ void runCommand(char command[])
 		else if (strcmp(arg1,"--int")==0)
 		{
 			if(strcmp(intType,"timer")==0)
-				{}
-				//deleteTimerToDisk();				//removes Timer interrupt routine from disk.
+				{
+					deleteTimerToDisk();				//removes Timer interrupt routine from disk.
+				}
 			else
 			{
 				int intNo = atoi(intType);
