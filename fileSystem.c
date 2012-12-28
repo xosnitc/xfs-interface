@@ -488,44 +488,34 @@ int loadINITCode(char* fileName ){
 */
 void displayFileContents(char *name)
 {
-	int i,j,k,l,flag=0;
-	int blk[SIZE_EXEFILE];
-	for(j = FAT; j < FAT+NO_OF_FAT_BLOCKS; j++)
+	int i,j,k,l,flag=0,locationOfFat;
+	int blk[SIZE_EXEFILE_BASIC];
+	
+	locationOfFat = CheckRepeatedName(name);
+	if(locationOfFat >= FAT_SIZE){
+		printf("File not found\n");
+		return;
+	}
+	getDataBlocks(blk,locationOfFat);
+	
+	for(k = 1; k <= SIZE_EXEFILE; k++)
 	{
-		for(i = 0 ; i < BLOCK_SIZE ; i = i + FATENTRY_SIZE)
+		if(blk[k]!=0)
 		{
-			if(strcmp(disk[j].word[i+FATENTRY_FILENAME],name) == 0 && getValue(disk[j].word[i+FATENTRY_BASICBLOCK]) != -1)		
+			emptyBlock(TEMP_BLOCK);
+			readFromDisk(TEMP_BLOCK,blk[k]);
+			for(l=0;l<BLOCK_SIZE;l++)
 			{
-				emptyBlock(TEMP_BLOCK);	
-				readFromDisk(TEMP_BLOCK,getValue(disk[j].word[i+FATENTRY_BASICBLOCK]));
-				for(k = 0; k < SIZE_EXEFILE; k++)
-				{
-					blk[k]=getValue(disk[TEMP_BLOCK].word[k]);
-				}
-				for(k = 0; k < SIZE_EXEFILE; k++)
-				{
-					if(blk[k]!=0)
-					{
-						emptyBlock(TEMP_BLOCK);
-						readFromDisk(TEMP_BLOCK,blk[k]);
-						for(l=0;l<BLOCK_SIZE;l++)
-						{
-							if(strcmp(disk[TEMP_BLOCK].word[l],"\0")!=0)
-								printf("%d-%s   \n",l,disk[TEMP_BLOCK].word[l]);
-						}
-					}
-				}
-				flag=1;
+				if(strcmp(disk[TEMP_BLOCK].word[l],"\0")!=0)
+					printf("%d-%s   \n",l,disk[TEMP_BLOCK].word[l]);
 			}
-			if(flag==1)
-				return;
-			
 		}
 	}
-	if(flag==0)
-		printf("File %s not found",name);
 }
 
+/*
+  This function copies the contents of the disk starting from <startBlock> to <endBlock> to a unix file.
+*/
 void copyBlocksToFile (int startblock,int endblock,char *filename)
 {
 	int i,j;
