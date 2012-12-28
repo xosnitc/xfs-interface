@@ -162,7 +162,9 @@ void runCommand(char command[])
 			}
 		}
 		else if (strcmp(arg1,"--exhandler")==0)
-			{}//deleteExHandlerFromDisk();			 //removes exception handler routine from disk.			
+			{
+				deleteExHandlerFromDisk();			 //removes exception handler routine from disk.			
+			}
 		else
 			printf("Invalid argument \"%s\" for rm. See \"help\" for more information",arg1);
 	}	

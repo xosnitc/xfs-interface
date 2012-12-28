@@ -190,6 +190,16 @@ int deleteIntCode(int intNo)
 }
 
 /*
+  This function deletes the Exception Handler from the disk.
+*/
+int deleteExHandlerFromDisk()
+{
+	emptyBlock(TEMP_BLOCK);
+	writeToDisk(TEMP_BLOCK,EX_HANDLER);
+	return 0;
+}
+
+/*
   This function returns the address of a free block on the disk.
   The value returned will be the relative word address of the corresponding entry in the free list.
 */

@@ -199,4 +199,10 @@ int deleteTimerFromDisk();
   This function deletes the Interrupt <intNo> from the disk.
 */
 int deleteIntCode(int intNo);	
+
+/*
+  This function deletes the Exception Handler from the disk.
+*/
+int deleteExHandlerFromDisk();
+
 #endif
