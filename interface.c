@@ -211,7 +211,7 @@ void runCommand(char command[])
 			copyBlocksToFile (startBlock,endBlock,fileName);
 		}	
 	}						
-	else if (strcmp(arg1,"exit")==0)		//Exits the interface
+	else if (strcmp(name,"exit")==0)		//Exits the interface
 		exit(0);
 	else
 		printf("Unknown command \"%s\". See \"help\" for more information",name);
