@@ -272,61 +272,64 @@ int writeFileToDisk(FILE *f, int blockNum, int type){
 	{
 		char buffer[32],s[16];
 		char *instr, *arg1, *arg2;
-		int line_count=0;
+		int line_count=0,flag=0;
 		for(i = 0; i < (BLOCK_SIZE/2); i=i++)
 		{
 			fgets(buffer,32,f);
-			if(strcmp(buffer,"\n")!=0)
+			if(strlen(buffer)>3)
 			{
-			if(buffer[strlen(buffer)-1]=='\n')
-				buffer[strlen(buffer)-1]='\0';
-			instr=strtok(buffer," ");
-			arg1=strtok(NULL," ");
-			arg2=strtok(NULL," ");
-			bzero(s,16);
-			if(arg1!=NULL)
-			{
-				sprintf(s,"%s %s",instr,arg1);
-				for(j=strlen(s);j<16;j++)
-					s[j]='\0';
-				strcpy(disk[TEMP_BLOCK].word[line_count],s);
-				if(arg2!=NULL)
+				if(buffer[strlen(buffer)-1]=='\n')
+					buffer[strlen(buffer)-1]='\0';
+				instr=strtok(buffer," ");
+				arg1=strtok(NULL," ");
+				arg2=strtok(NULL,",");
+			
+				bzero(s,16);
+				if(arg1!=NULL)
 				{
-					strcpy(s,arg2);
+					sprintf(s,"%s %s",instr,arg1);
 					for(j=strlen(s);j<16;j++)
 						s[j]='\0';
-					strcpy(disk[TEMP_BLOCK].word[line_count+1],s);
+					strcpy(disk[TEMP_BLOCK].word[line_count],s);
+					if(arg2!=NULL)
+					{
+						strcpy(s,arg2);
+						for(j=strlen(s);j<16;j++)
+							s[j]='\0';
+						strcpy(disk[TEMP_BLOCK].word[line_count+1],s);
 				
+					}
+					else
+					{
+						for(j=0;j<16;j++)
+							s[j]='\0';
+						strcpy(disk[TEMP_BLOCK].word[line_count+1],s);
+					}
+					line_count=line_count+2;
 				}
 				else
 				{
+					sprintf(s,"%s",instr);
+					for(j=strlen(s);j<=16;j++)
+						strcat(s,"\0");
+					strcpy(disk[TEMP_BLOCK].word[line_count],s);
+					bzero(s,16);
 					for(j=0;j<16;j++)
 						s[j]='\0';
 					strcpy(disk[TEMP_BLOCK].word[line_count+1],s);
+					line_count=line_count+2;
+			
 				}
-				line_count=line_count+2;
-			}
-			else
-			{
-				sprintf(s,"%s",instr);
-				for(j=strlen(s);j<=16;j++)
-					strcat(s,"\0");
-				strcpy(disk[TEMP_BLOCK].word[line_count],s);
-				bzero(s,16);
-				for(j=0;j<16;j++)
-					s[j]='\0';
-				strcpy(disk[TEMP_BLOCK].word[line_count+1],s);
-				line_count=line_count+2;
 			
 			}
+			
 			 if(feof(f)){
-			 	printf("\n%s",buffer);
 				strcpy(disk[TEMP_BLOCK].word[line_count], "");
 				writeToDisk(TEMP_BLOCK,blockNum);
 				return -1;
 			 }
 			 //bzero(buffer,31);
-			 }
+			
 		}
 		writeToDisk(TEMP_BLOCK,blockNum);
 		return 1;
