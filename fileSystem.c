@@ -347,7 +347,8 @@ int writeFileToDisk(FILE *f, int blockNum, int type){
 int loadExecutableToDisk(char *name){
 	FILE *fileToBeLoaded;
 	int freeBlock[SIZE_EXEFILE_BASIC];
-	int i,j,k,file_size=0;
+	int i,j,k,file_size=0,num_of_lines=0,num_of_blocks_reqd=0;
+	char c='\0';
 	fileToBeLoaded = fopen(name, "r");
 	if(fileToBeLoaded == NULL){
 	    printf("File %s not found.\n", name);
@@ -359,7 +360,24 @@ int loadExecutableToDisk(char *name){
 		return -1;
 	}
 	
-	for(i = 0; i < SIZE_EXEFILE_BASIC ; i++)
+	while(c!=EOF)
+	{
+		c=fgetc(fileToBeLoaded);
+		if(c=='\n')
+			num_of_lines++;
+	}
+	
+	num_of_blocks_reqd = (num_of_lines / BLOCK_SIZE)+1;
+	if(num_of_blocks_reqd > SIZE_EXEFILE_BASIC)
+	{
+		printf("The size of file exceeds %d blocks",SIZE_EXEFILE_BASIC);
+		return -1;
+	}
+	//printf("\nNum of lines = %d",num_of_lines);
+	
+	fseek(fileToBeLoaded,0,SEEK_SET);
+	
+	for(i = 0; i < num_of_blocks_reqd ; i++)
 	{
 		if((freeBlock[i] = FindFreeBlock()) == -1){
 				printf("not sufficient space in disk to hold a new file.\n");
