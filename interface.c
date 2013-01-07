@@ -88,8 +88,9 @@ void runCommand(char command[])
 		else if (strcmp(arg1,"--init")==0)	
 			loadINITCode(fileName);			 //loads init code to disk
 		else if (strcmp(arg1,"--data")==0) 
-			{}
-			//loadDataToDisk(fileName);		 //loads data file to disk.
+			{
+				loadDataToDisk(fileName);		 //loads data file to disk.
+			}
 		else if (strcmp(arg1,"--os")==0)
 			loadOSCode(fileName);			//loads OS startup code to disk
 		else if (strcmp(arg1,"--int")==0)

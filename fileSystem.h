@@ -210,5 +210,9 @@ int deleteExHandlerFromDisk();
 */
 void displayDiskFreeList();
 
+/*
+  This function loads a data file to the disk.
+*/
+int loadDataToDisk(char *name);
 
 #endif

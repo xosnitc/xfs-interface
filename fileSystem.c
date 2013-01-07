@@ -270,12 +270,42 @@ int writeFileToDisk(FILE *f, int blockNum, int type){
 	emptyBlock(TEMP_BLOCK);
 	if(type==0)			//writing files with assembly code
 	{
-		char buffer[32],s[16];
+		char buffer[32],s[16],c;
 		char *instr, *arg1, *arg2;
-		int line_count=0,flag=0;
+		int line_count=0,flag=0,k=0;
 		for(i = 0; i < (BLOCK_SIZE/2); i=i++)
 		{
 			fgets(buffer,32,f);
+			//printf("%d - %s\n",i,buffer);
+			
+			/*if(strlen(buffer)>31)
+			{
+				buffer[strlen(buffer)-2] = '"';
+				buffer[strlen(buffer)-1] = '\0';
+				for(k=strlen(buffer);k<100;k++)
+					buffer[k]='\0';
+			}*/
+			/*
+			k=0;
+			fscanf(f,"%c",&c);
+		  	while(c!='\n')
+		  	{  	
+		  		if(k<=30)
+					buffer[k] = c;
+					
+				if(feof(f)){
+				strcpy(disk[TEMP_BLOCK].word[line_count], "");
+				writeToDisk(TEMP_BLOCK,blockNum);
+				return -1;
+				 }
+				fscanf(f,"%c",&c);
+				
+				k++;
+		  	}
+		  	buffer[k] = '\0';
+		  	printf("%d - %s\n",i,buffer);
+		  	*/
+		  	
 			if(strlen(buffer)>3)
 			{
 				if(buffer[strlen(buffer)-1]=='\n')
@@ -334,6 +364,26 @@ int writeFileToDisk(FILE *f, int blockNum, int type){
 		writeToDisk(TEMP_BLOCK,blockNum);
 		return 1;
 	}	
+	else if(type==1)			//writing data files
+	{
+		char buffer1[32];
+		int line_count=0,flag=0,k=0;
+		for(i = 0; i < BLOCK_SIZE; i=i++)
+		{
+			
+			fgets(buffer1,32,f);
+			printf("%d - %s\n",i,buffer1);
+			strcpy(disk[TEMP_BLOCK].word[i],buffer1);
+			if(feof(f))
+			{
+				strcpy(disk[TEMP_BLOCK].word[i], "");
+				writeToDisk(TEMP_BLOCK,blockNum);
+				return -1;
+			}	
+		}
+		writeToDisk(TEMP_BLOCK,blockNum);
+		return 1;
+	}
 
 }
 
@@ -348,6 +398,8 @@ int loadExecutableToDisk(char *name){
 	FILE *fileToBeLoaded;
 	int freeBlock[SIZE_EXEFILE_BASIC];
 	int i,j,k,file_size=0,num_of_lines=0,num_of_blocks_reqd=0;
+	for(i=0;i<SIZE_EXEFILE_BASIC;i++)
+		freeBlock[i]=0;
 	char c='\0';
 	fileToBeLoaded = fopen(name, "r");
 	if(fileToBeLoaded == NULL){
@@ -367,7 +419,7 @@ int loadExecutableToDisk(char *name){
 			num_of_lines++;
 	}
 	
-	num_of_blocks_reqd = (num_of_lines / BLOCK_SIZE) + 1;
+	num_of_blocks_reqd = (num_of_lines / (BLOCK_SIZE/2)) + 1;
 	
 	if(num_of_blocks_reqd > SIZE_EXEFILE)
 	{
@@ -442,6 +494,102 @@ int loadExecutableToDisk(char *name){
 }
 
 
+
+/*
+  This function loads a data file to the disk.
+*/
+int loadDataToDisk(char *name)
+{
+	FILE *fileToBeLoaded;
+	int freeBlock[MAX_DATAFILE_SIZE_BASIC];
+	int i,j,k,num_of_lines=0,num_of_blocks_reqd=0,file_size=0;
+	for(i=0;i<MAX_DATAFILE_SIZE_BASIC;i++)
+		freeBlock[i]=0;
+	char c='\0';
+	fileToBeLoaded = fopen(name, "r");
+	if(fileToBeLoaded == NULL)
+	{
+		printf("File %s not found.\n", name);
+		return -1;
+	}
+	//name = strcat(name, "\n");  //NOTE:   modified here
+	if(fileToBeLoaded == NULL)
+	{
+		printf("The file could not be opened");
+		return -1;
+	}
+	
+	while(c!=EOF)
+	{
+		c=fgetc(fileToBeLoaded);
+		if(c=='\n')
+			num_of_lines++;
+	}
+	printf("\nNum of lines = %d",num_of_lines);
+	num_of_blocks_reqd = (num_of_lines / BLOCK_SIZE) + 1;
+	
+	if(num_of_blocks_reqd > MAX_DATAFILE_SIZE)
+	{
+		printf("The size of file exceeds %d blocks",MAX_DATAFILE_SIZE);
+		return -1;
+	}
+	
+	for(i = 0; i < num_of_blocks_reqd + 1; i++)
+	{
+		if((freeBlock[i] = FindFreeBlock()) == -1){
+				printf("not sufficient space in disk to hold a new file.\n");
+				FreeUnusedBlock(freeBlock, MAX_DATAFILE_SIZE_BASIC);
+				return -1;
+			}
+	}
+	i = CheckRepeatedName(name);
+	if( i < FAT_SIZE )
+	{
+		printf("Disk already contains the file with this name. Try again with a different name.\n");
+		FreeUnusedBlock(freeBlock, MAX_DATAFILE_SIZE_BASIC);
+		return -1;
+	}
+	
+	k = FindEmptyFatEntry();		
+	if( k == -1 )
+	{
+		FreeUnusedBlock(freeBlock, MAX_DATAFILE_SIZE_BASIC);
+		printf("No free FAT entry found.\n");
+		return -1;			
+	}
+	
+	
+	for(i = DISK_FREE_LIST ;i < DISK_FREE_LIST + NO_OF_FREE_LIST_BLOCKS; i++)		//updating disk free list in disk
+		writeToDisk(i, i);
+	emptyBlock(TEMP_BLOCK);				//note:need to modify this
+	
+	for( i = 1 ; i < MAX_DATAFILE_SIZE_BASIC ; i++ )
+	{
+		storeValue(disk[TEMP_BLOCK].word[i-1],freeBlock[i]); 
+		//printf("\n%d",getValue(disk[TEMP_BLOCK].word[i-1]));
+	}
+	writeToDisk(TEMP_BLOCK,freeBlock[0]);
+	
+	for(i=0;i<num_of_blocks_reqd;i++)
+	{
+		j = writeFileToDisk(fileToBeLoaded, freeBlock[i+1], DATA_FILE);
+		file_size++;
+	}
+	
+	  
+	AddEntryToMemFat(k, name, file_size * BLOCK_SIZE, freeBlock[0]);		
+ 	//printf("FAT %d\n", i);
+ 	//printf("basic %d\n", freeBlock[0]);
+	for(i = FAT; i < FAT + NO_OF_FAT_BLOCKS ; i++){
+		writeToDisk(i,i);				//updating disk fat entry note:check for correctness
+	}
+	
+      close(fileToBeLoaded);
+      return 0;
+	
+}
+
+
 /*
   This function copies the init program to its proper location on the disk.
 */
@@ -464,6 +612,8 @@ int loadINITCode(char* fileName ){
 	return 0;
   
 }
+
+
 
 /*
   This function loads the OS startup code specified by the first arguement to its appropriate location on disk.
