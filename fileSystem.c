@@ -276,6 +276,8 @@ int writeFileToDisk(FILE *f, int blockNum, int type){
 		for(i = 0; i < (BLOCK_SIZE/2); i=i++)
 		{
 			fgets(buffer,32,f);
+			if(strcmp(buffer,"\n")!=0)
+			{
 			if(buffer[strlen(buffer)-1]=='\n')
 				buffer[strlen(buffer)-1]='\0';
 			instr=strtok(buffer," ");
@@ -318,9 +320,12 @@ int writeFileToDisk(FILE *f, int blockNum, int type){
 			
 			}
 			 if(feof(f)){
-				//strcpy(disk[TEMP_BLOCK].word[line_count], "");
+			 	printf("\n%s",buffer);
+				strcpy(disk[TEMP_BLOCK].word[line_count], "");
 				writeToDisk(TEMP_BLOCK,blockNum);
 				return -1;
+			 }
+			 //bzero(buffer,31);
 			 }
 		}
 		writeToDisk(TEMP_BLOCK,blockNum);
@@ -462,6 +467,9 @@ int loadINITCode(char* fileName ){
   The code is first copied to memory copy. If this copying proceeds properly then the memory copy is committed to the disk.
 */
 int loadOSCode(char* fileName){
+
+	emptyBlock(TEMP_BLOCK);
+	writeToDisk(TEMP_BLOCK,OS_STARTUP_CODE);
 	FILE* fp = fopen(fileName, "r");
 	int j;
 	if(fp == NULL)
