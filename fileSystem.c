@@ -367,17 +367,18 @@ int loadExecutableToDisk(char *name){
 			num_of_lines++;
 	}
 	
-	num_of_blocks_reqd = (num_of_lines / BLOCK_SIZE)+1;
-	if(num_of_blocks_reqd > SIZE_EXEFILE_BASIC)
+	num_of_blocks_reqd = (num_of_lines / BLOCK_SIZE) + 1;
+	
+	if(num_of_blocks_reqd > SIZE_EXEFILE)
 	{
-		printf("The size of file exceeds %d blocks",SIZE_EXEFILE_BASIC);
+		printf("The size of file exceeds %d blocks",SIZE_EXEFILE);
 		return -1;
 	}
 	//printf("\nNum of lines = %d",num_of_lines);
 	
 	fseek(fileToBeLoaded,0,SEEK_SET);
 	
-	for(i = 0; i < num_of_blocks_reqd ; i++)
+	for(i = 0; i < num_of_blocks_reqd + 1; i++)
 	{
 		if((freeBlock[i] = FindFreeBlock()) == -1){
 				printf("not sufficient space in disk to hold a new file.\n");
@@ -411,42 +412,23 @@ int loadExecutableToDisk(char *name){
 	}
 	writeToDisk(TEMP_BLOCK,freeBlock[0]);
 	
-	j = writeFileToDisk(fileToBeLoaded, freeBlock[1], ASSEMBLY_CODE);
-	file_size++;		//writing executable file to disk
-	if(j == 1)
+	for(i=0;i<num_of_blocks_reqd;i++)
 	{
-	  j = writeFileToDisk(fileToBeLoaded, freeBlock[2], ASSEMBLY_CODE);		//if the file is longer than one page.  
-	  file_size++;
+		j = writeFileToDisk(fileToBeLoaded, freeBlock[i+1], ASSEMBLY_CODE);
+		file_size++;
 	}
-	else
-	{
-		emptyBlock(TEMP_BLOCK);
-		readFromDisk(TEMP_BLOCK,freeBlock[0]);
-		storeValue(disk[TEMP_BLOCK].word[1],0);
-		writeToDisk(TEMP_BLOCK,freeBlock[0]);
-	}
-	if(j == 1)
-	{
-	  writeFileToDisk(fileToBeLoaded, freeBlock[3], ASSEMBLY_CODE);
-	  file_size++;
-	}
-	else
-	{
-		emptyBlock(TEMP_BLOCK);
-		readFromDisk(TEMP_BLOCK,freeBlock[0]);
-		storeValue(disk[TEMP_BLOCK].word[2],0);
-		writeToDisk(TEMP_BLOCK,freeBlock[0]);
-		
-	}
-	emptyBlock(TEMP_BLOCK);
-	readFromDisk(TEMP_BLOCK,freeBlock[0]);	
+	
+	//emptyBlock(TEMP_BLOCK);
+	//readFromDisk(TEMP_BLOCK,freeBlock[0]);	
 	//storeValue(disk[TEMP_BLOCK].word[i-1],0);
 	
 	/*for( i = 0 ; i < SIZE_EXEFILE ; i++ )
 	{
 		printf("\n%d",getValue(disk[TEMP_BLOCK].word[i]));
 	}*/
-	writeToDisk(TEMP_BLOCK,freeBlock[0]);
+	//writeToDisk(TEMP_BLOCK,freeBlock[0]);
+	  
+	  
 	  
 	AddEntryToMemFat(k, name, file_size * BLOCK_SIZE, freeBlock[0]);		
  	//printf("FAT %d\n", i);
