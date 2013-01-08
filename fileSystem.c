@@ -267,16 +267,16 @@ void AddEntryToMemFat(int startIndexInFat, char *nameOfFile, int size_of_file, i
 */
 int writeFileToDisk(FILE *f, int blockNum, int type){
 	int i, line=0,j;
+	char buffer[32],s[16],c;
 	emptyBlock(TEMP_BLOCK);
 	if(type==0)			//writing files with assembly code
 	{
-		char buffer[32],s[16],c;
 		char *instr, *arg1, *arg2;
 		int line_count=0,flag=0,k=0;
 		for(i = 0; i < (BLOCK_SIZE/2); i=i++)
 		{
 			fgets(buffer,32,f);
-			//printf("%d - %s\n",i,buffer);
+			printf("%d - %s\n",i,buffer);
 			
 			/*if(strlen(buffer)>31)
 			{
@@ -366,13 +366,12 @@ int writeFileToDisk(FILE *f, int blockNum, int type){
 	}	
 	else if(type==1)			//writing data files
 	{
-		char buffer1[32];
-		int line_count=0,flag=0,k=0;
+		char buffer1[16],c;
 		for(i = 0; i < BLOCK_SIZE; i=i++)
 		{
+			fgets(buffer1,16,f);
+			//printf("%d - %s\n",i,buffer1);
 			
-			fgets(buffer1,32,f);
-			printf("%d - %s\n",i,buffer1);
 			strcpy(disk[TEMP_BLOCK].word[i],buffer1);
 			if(feof(f))
 			{
@@ -533,6 +532,8 @@ int loadDataToDisk(char *name)
 		printf("The size of file exceeds %d blocks",MAX_DATAFILE_SIZE);
 		return -1;
 	}
+	
+	fseek(fileToBeLoaded,0,SEEK_SET);
 	
 	for(i = 0; i < num_of_blocks_reqd + 1; i++)
 	{
