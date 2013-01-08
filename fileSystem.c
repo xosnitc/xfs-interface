@@ -438,14 +438,22 @@ int writeFileToDisk(FILE *f, int blockNum, int type){
   This function loads the executable file corresponding to the first arguement to an appropriate location on the disk.
   This function systematically uses the above functions to do this action.
 */
-int loadExecutableToDisk(char *name){
+int loadExecutableToDisk(char *name)
+{
 	FILE *fileToBeLoaded;
 	int freeBlock[SIZE_EXEFILE_BASIC];
 	int i,j,k,file_size=0,num_of_lines=0,num_of_blocks_reqd=0;
 	for(i=0;i<SIZE_EXEFILE_BASIC;i++)
 		freeBlock[i]=0;
-	char c='\0';
-	fileToBeLoaded = fopen(name, "r");
+	char c='\0',*s;
+	char filename[16];
+	s = strrchr(name,'/');
+	if(s!=NULL)
+		strcpy(filename,s+1);
+	else
+		strcpy(filename,name);	
+	
+	fileToBeLoaded = fopen(filename, "r");
 	if(fileToBeLoaded == NULL){
 	    printf("File %s not found.\n", name);
 	    return -1;
@@ -526,7 +534,7 @@ int loadExecutableToDisk(char *name){
 	  
 	  
 	  
-	AddEntryToMemFat(k, name, file_size * BLOCK_SIZE, freeBlock[0]);		
+	AddEntryToMemFat(k, filename, file_size * BLOCK_SIZE, freeBlock[0]);		
  	//printf("FAT %d\n", i);
  	//printf("basic %d\n", freeBlock[0]);
 	for(i = FAT; i < FAT + NO_OF_FAT_BLOCKS ; i++){
@@ -549,8 +557,15 @@ int loadDataToDisk(char *name)
 	int i,j,k,num_of_lines=0,num_of_blocks_reqd=0,file_size=0;
 	for(i=0;i<MAX_DATAFILE_SIZE_BASIC;i++)
 		freeBlock[i]=0;
-	char c='\0';
-	fileToBeLoaded = fopen(name, "r");
+	char c='\0',*s;
+	char filename[16];
+	s = strrchr(name,'/');
+	if(s!=NULL)
+		strcpy(filename,s+1);
+	else
+		strcpy(filename,name);	
+		
+	fileToBeLoaded = fopen(filename, "r");
 	if(fileToBeLoaded == NULL)
 	{
 		printf("File %s not found.\n", name);
@@ -623,7 +638,7 @@ int loadDataToDisk(char *name)
 	}
 	
 	  
-	AddEntryToMemFat(k, name, file_size * BLOCK_SIZE, freeBlock[0]);		
+	AddEntryToMemFat(k, filename, file_size * BLOCK_SIZE, freeBlock[0]);		
  	//printf("FAT %d\n", i);
  	//printf("basic %d\n", freeBlock[0]);
 	for(i = FAT; i < FAT + NO_OF_FAT_BLOCKS ; i++){

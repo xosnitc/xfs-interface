@@ -77,7 +77,7 @@ void runCommand(char command[])
 	    	char *fileName = arg2;;
 	    
 		if(fileName!=NULL)
-			fileName[WORD_SIZE - 1] = '\0';
+			fileName[50] = '\0';
 		else
 		{
 			printf("Missing <filename> for load. See \"help\" for more information");
@@ -123,7 +123,7 @@ void runCommand(char command[])
 	    	char *fileName = arg2;;
 	    
 		if(fileName!=NULL)
-			fileName[WORD_SIZE - 1] = '\0';				
+			fileName[50] = '\0';				
 		if (strcmp(arg1,"--exec")==0)		
 		{
 			if(fileName==NULL)
@@ -207,7 +207,7 @@ void runCommand(char command[])
 			int startBlock = atoi(arg1);
 			int endBlock = atoi(arg2);	
 			char *fileName = arg3;			
-			fileName[WORD_SIZE - 1] = '\0';
+			fileName[50] = '\0';
 			copyBlocksToFile (startBlock,endBlock,fileName);
 		}	
 	}						
@@ -221,7 +221,7 @@ void runCommand(char command[])
 
 int main(){
   int  intNo;
-  char fileName[WORD_SIZE], option;
+  char fileName[51], option;
   FILE* diskFp;
   createDisk(DO_NOT_FORMAT); //in case the disk file is not present
   loadFileToVirtualDisk();	
