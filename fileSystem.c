@@ -760,18 +760,35 @@ void displayFileContents(char *name)
 		return;
 	}
 	
-	getDataBlocks(blk,locationOfFat);
-	
-	for(k = 1; k <= SIZE_EXEFILE; k++)
+	if(strcmp(name,INIT_NAME)==0)
 	{
-		if(blk[k]!=0)
+		for(k = 0; k < NO_OF_INIT_BLOCKS; k++)
 		{
 			emptyBlock(TEMP_BLOCK);
-			readFromDisk(TEMP_BLOCK,blk[k]);
+			readFromDisk(TEMP_BLOCK,INIT_BASIC_BLOCK+k);
 			for(l=0;l<BLOCK_SIZE;l++)
 			{
 				if(strcmp(disk[TEMP_BLOCK].word[l],"\0")!=0)
 					printf("%d - %s   \n",l,disk[TEMP_BLOCK].word[l]);
+			}
+		}
+		
+	}
+	else
+	{
+		getDataBlocks(blk,locationOfFat);
+	
+		for(k = 1; k <= SIZE_EXEFILE; k++)
+		{
+			if(blk[k]!=0)
+			{
+				emptyBlock(TEMP_BLOCK);
+				readFromDisk(TEMP_BLOCK,blk[k]);
+				for(l=0;l<BLOCK_SIZE;l++)
+				{
+					if(strcmp(disk[TEMP_BLOCK].word[l],"\0")!=0)
+						printf("%d - %s   \n",l,disk[TEMP_BLOCK].word[l]);
+				}
 			}
 		}
 	}
