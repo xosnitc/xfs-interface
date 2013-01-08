@@ -267,45 +267,47 @@ void AddEntryToMemFat(int startIndexInFat, char *nameOfFile, int size_of_file, i
 */
 int writeFileToDisk(FILE *f, int blockNum, int type){
 	int i, line=0,j;
-	char buffer[32],s[16],c;
+	char buffer[32],s[16],temp[100],c;
 	emptyBlock(TEMP_BLOCK);
 	if(type==0)			//writing files with assembly code
 	{
-		char *instr, *arg1, *arg2;
+		char *instr, *arg1, *arg2, *string_start;
 		int line_count=0,flag=0,k=0;
 		for(i = 0; i < (BLOCK_SIZE/2); i=i++)
 		{
-			fgets(buffer,32,f);
-			printf("%d - %s\n",i,buffer);
+			//fgets(buffer,32,f);
+			//printf("%d - %s\n",i,buffer);
+			fgets(temp,100,f);
 			
-			/*if(strlen(buffer)>31)
+			string_start=strchr(temp,'"');
+			if(string_start==NULL)
 			{
-				buffer[strlen(buffer)-2] = '"';
-				buffer[strlen(buffer)-1] = '\0';
-				for(k=strlen(buffer);k<100;k++)
+				for(k=0;k<31;k++)
+					buffer[k]=temp[k];
+				//buffer[k+1]='\n';
+				buffer[k]='\0';
+			}
+			else
+			{
+				if(strlen(string_start)<=16)
+				{
+					for(k=0;k<31;k++)
+						buffer[k]=temp[k];
 					buffer[k]='\0';
-			}*/
-			/*
-			k=0;
-			fscanf(f,"%c",&c);
-		  	while(c!='\n')
-		  	{  	
-		  		if(k<=30)
-					buffer[k] = c;
-					
-				if(feof(f)){
-				strcpy(disk[TEMP_BLOCK].word[line_count], "");
-				writeToDisk(TEMP_BLOCK,blockNum);
-				return -1;
-				 }
-				fscanf(f,"%c",&c);
-				
-				k++;
-		  	}
-		  	buffer[k] = '\0';
-		  	printf("%d - %s\n",i,buffer);
-		  	*/
-		  	
+				}
+				else
+				{
+					for(k=0;k<(strlen(temp)-strlen(string_start)+15);k++)
+					{
+						buffer[k]=temp[k];
+					}
+					buffer[k-1]='"';
+					buffer[k]='\0';
+				}
+			}
+		
+			//printf("%d - %s",i,buffer);
+			
 			if(strlen(buffer)>3)
 			{
 				if(buffer[strlen(buffer)-1]=='\n')
@@ -757,6 +759,7 @@ void displayFileContents(char *name)
 		printf("File not found\n");
 		return;
 	}
+	
 	getDataBlocks(blk,locationOfFat);
 	
 	for(k = 1; k <= SIZE_EXEFILE; k++)
