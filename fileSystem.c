@@ -57,6 +57,7 @@ int getDataBlocks(int *basicBlockAddr, int locationOfFat, int type)
 	int i;
 	basicBlockAddr[0] = getValue(disk[FAT + locationOfFat / BLOCK_SIZE].word[locationOfFat % BLOCK_SIZE + FATENTRY_BASICBLOCK]);
 	readFromDisk(TEMP_BLOCK,basicBlockAddr[0]);                 //note:need to modify this
+	//printf("Basic block = %d\n",basicBlockAddr[0]);
 	if(type==0)			//ASSEMBLY CODE
 	{
 		for( i = 0 ; i < SIZE_EXEFILE ; i++)
@@ -91,7 +92,8 @@ int getDataBlocks(int *basicBlockAddr, int locationOfFat, int type)
 */
 void FreeUnusedBlock(int *freeBlock, int size){
 	int i=0;
-	for( i = 0 ; i < size && freeBlock[i] != -1 ; i++){
+	for( i = 0 ; i < size && freeBlock[i] != -1 && freeBlock[i] != 0; i++){
+		//printf("Block Num = %d\nLocation = %d", freeBlock[i],freeBlock[i] % BLOCK_SIZE );
 		storeValue( disk[DISK_FREE_LIST + freeBlock[i] / BLOCK_SIZE].word[freeBlock[i] % BLOCK_SIZE] , 0 );
 	}
 	
@@ -144,6 +146,7 @@ int deleteExecutableFromDisk(char *name)
 		printf("File not found\n");
 		return -1;
 	}
+	//printf("location of FAT = %d\n",locationOfFat);
 	getDataBlocks(blockAddresses,locationOfFat,ASSEMBLY_CODE);		
 	FreeUnusedBlock(blockAddresses, SIZE_EXEFILE_BASIC);
 // 	writeToDisk(DISK_FREE_LIST, DISK_FREE_LIST);
@@ -566,7 +569,7 @@ int loadDataToDisk(char *name)
 		if(c=='\n')
 			num_of_lines++;
 	}
-	printf("\nNum of lines = %d",num_of_lines);
+	//printf("\nNum of lines = %d",num_of_lines);
 	num_of_blocks_reqd = (num_of_lines / BLOCK_SIZE) + 1;
 	
 	if(num_of_blocks_reqd > MAX_DATAFILE_SIZE)
