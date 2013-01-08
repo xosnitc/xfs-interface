@@ -101,7 +101,7 @@ int removeFatEntry(int locationOfFat);
 /*
   This function returns the basic block entry(pass by pointer) corresponding to the address specified by the second arguement.
 */
-int getDataBlocks(int *basicBlockAddr, int locationOfFat);
+int getDataBlocks(int *basicBlockAddr, int locationOfFat,int type);
 
 /*
   This function loads the executable file corresponding to the first arguement to an appropriate location on the disk.
@@ -214,5 +214,10 @@ void displayDiskFreeList();
   This function loads a data file to the disk.
 */
 int loadDataToDisk(char *name);
+
+/*
+  This function deletes a data file from the disk.
+*/
+int deleteDataFromDisk(char *name);
 
 #endif

@@ -47,15 +47,25 @@ int CheckRepeatedName(char *name){
 
 /*
   This function returns the basic block entry(pass by pointer) corresponding to the address specified by the second arguement.
+  Third argument specifies the type of file (assembly code or data file)
   NOTE: locationOfFat - relative word address of the name field in the fat.
 	This function works only for EXE files.
 */
-int getDataBlocks(int *basicBlockAddr, int locationOfFat){
+int getDataBlocks(int *basicBlockAddr, int locationOfFat, int type)
+{
+	
 	int i;
 	basicBlockAddr[0] = getValue(disk[FAT + locationOfFat / BLOCK_SIZE].word[locationOfFat % BLOCK_SIZE + FATENTRY_BASICBLOCK]);
 	readFromDisk(TEMP_BLOCK,basicBlockAddr[0]);                 //note:need to modify this
-	for( i = 0 ; i < SIZE_EXEFILE ; i++){
-		basicBlockAddr[i+1] = getValue(disk[TEMP_BLOCK].word[i]);
+	if(type==0)			//ASSEMBLY CODE
+	{
+		for( i = 0 ; i < SIZE_EXEFILE ; i++)
+			basicBlockAddr[i+1] = getValue(disk[TEMP_BLOCK].word[i]);
+	}
+	else if(type==1)
+	{
+		for( i = 0 ; i < MAX_DATAFILE_SIZE ; i++)
+			basicBlockAddr[i+1] = getValue(disk[TEMP_BLOCK].word[i]);
 	}
 	return 0;
 }
@@ -134,7 +144,7 @@ int deleteExecutableFromDisk(char *name)
 		printf("File not found\n");
 		return -1;
 	}
-	getDataBlocks(blockAddresses,locationOfFat);		
+	getDataBlocks(blockAddresses,locationOfFat,ASSEMBLY_CODE);		
 	FreeUnusedBlock(blockAddresses, SIZE_EXEFILE_BASIC);
 // 	writeToDisk(DISK_FREE_LIST, DISK_FREE_LIST);
 // 	writeToDisk(DISK_FREE_LIST+1, DISK_FREE_LIST+1);
@@ -146,6 +156,36 @@ int deleteExecutableFromDisk(char *name)
 		writeToDisk(i,i);
 		return 0;	
 }
+
+/*
+  This function deletes a data file from the disk.
+*/
+int deleteDataFromDisk(char *name)
+{
+	int locationOfFat,i,blockAddresses[MAX_DATAFILE_SIZE_BASIC];   
+	if(strcmp(name, INIT_NAME) == 0)
+	{
+		printf("Init cannot be removed\n");
+		return 0;
+	}
+	locationOfFat = CheckRepeatedName(name);
+	if(locationOfFat >= FAT_SIZE)
+	{
+		printf("File not found\n");
+		return -1;
+	}
+	getDataBlocks(blockAddresses,locationOfFat,DATA_FILE);		
+	FreeUnusedBlock(blockAddresses, MAX_DATAFILE_SIZE_BASIC);
+	removeFatEntry(locationOfFat);
+	for(i = FAT ; i < FAT + NO_OF_FAT_BLOCKS ; i++){
+		writeToDisk(i,i);
+	}
+	for( i=DISK_FREE_LIST ; i<DISK_FREE_LIST + NO_OF_FREE_LIST_BLOCKS; i++)
+		writeToDisk(i,i);
+	return 0;
+}
+
+
 
 /*
   This function deletes the INIT code from the disk.
@@ -776,7 +816,7 @@ void displayFileContents(char *name)
 	}
 	else
 	{
-		getDataBlocks(blk,locationOfFat);
+		getDataBlocks(blk,locationOfFat,ASSEMBLY_CODE);
 	
 		for(k = 1; k <= SIZE_EXEFILE; k++)
 		{

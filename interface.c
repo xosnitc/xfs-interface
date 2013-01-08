@@ -144,7 +144,7 @@ void runCommand(char command[])
 				printf("Missing <filename> for rm. See \"help\" for more information");
 				return;
 			}
-			//deleteDataFromDisk(fileName);			 //removes data file from disk..		
+			deleteDataFromDisk(fileName);			 //removes data file from disk..		
 		}
 		else if (strcmp(arg1,"--os")==0)
 			{
