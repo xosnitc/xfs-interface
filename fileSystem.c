@@ -780,8 +780,8 @@ int initializeINIT()
 			writeToDisk(i,i);				//updating disk fat entry note:check for correctness
 		emptyBlock(TEMP_BLOCK);				//note:need to modify this
 
-		for( i = 1 ; i < SIZE_EXEFILE_BASIC ; i++ )						//updating basic block for file on disk
-			storeValue(disk[TEMP_BLOCK].word[i-1],INIT_BASIC_BLOCK + i); 
+		for( i = 0 ; i < NO_OF_INIT_BLOCKS ; i++ )	//updating basic block for file on disk
+			storeValue(disk[TEMP_BLOCK].word[i],INIT_BASIC_BLOCK + i); 
 		writeToDisk(TEMP_BLOCK, INIT_BASIC_BLOCK);
 	}
 }
