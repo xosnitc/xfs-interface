@@ -39,16 +39,16 @@ void runCommand(char command[])
 	if(strcmp(name,"help")==0)		//"help" to display all commands
 	{
 		printf("\n fdisk \n\t Format the disk with XFS filesystem\n\n");	
-		printf(" load --exec  <filename>  \n\t Loads an executable file to XFS disk \n\n");
-		printf(" load --init  <filename> \n\t Loads INIT code to XFS disk \n\n");
-		printf(" load --data <filename> \n\t Loads a data file to XFS disk \n\n");
-		printf(" load --os  <filename> \n\t Loads OS startup code to XFS disk \n\n");
-		printf(" load --int=timer <filename>\n\t Loads Timer Interrupt routine to XFS disk \n\n");		
-		printf(" load --int=[1-7] <filename>\n\t Loads the specified Interrupt routine to XFS disk \n\n");
-		printf(" load --exhandler <filename>  \n\t Loads exception handler routine to XFS disk \n\n");
-		printf(" rm --exec <filename>\n\t Removes an executable file from XFS disk \n\n");
-		printf(" rm --init  <unix_filename> \n\t Removes INIT code from XFS disk \n\n");	
-		printf(" rm --data	<filename>\n\t Removes a data file from XFS disk \n\n");
+		printf(" load --exec  <pathname>  \n\t Loads an executable file to XFS disk \n\n");
+		printf(" load --init  <pathname> \n\t Loads INIT code to XFS disk \n\n");
+		printf(" load --data <pathname> \n\t Loads a data file to XFS disk \n\n");
+		printf(" load --os  <pathname> \n\t Loads OS startup code to XFS disk \n\n");
+		printf(" load --int=timer <pathname>\n\t Loads Timer Interrupt routine to XFS disk \n\n");		
+		printf(" load --int=[1-7] <pathname>\n\t Loads the specified Interrupt routine to XFS disk \n\n");
+		printf(" load --exhandler <pathname>  \n\t Loads exception handler routine to XFS disk \n\n");
+		printf(" rm --exec <xfs_filename>\n\t Removes an executable file from XFS disk \n\n");
+		printf(" rm --init <xfs_filename> \n\t Removes INIT code from XFS disk \n\n");	
+		printf(" rm --data <xfs_filename>\n\t Removes a data file from XFS disk \n\n");
 		printf(" rm --os \n\t Removes OS startup code from XFS disk \n\n");
 		printf(" rm --int=timer \n\t Removes the Timer Interrupt routine from XFS disk \n\n");	
 		printf(" rm --int=[1-7] \n\t Removes the specified Interrupt routine from XFS disk \n\n");
@@ -80,7 +80,7 @@ void runCommand(char command[])
 			fileName[50] = '\0';
 		else
 		{
-			printf("Missing <filename> for load. See \"help\" for more information");
+			printf("Missing <pathname> for load. See \"help\" for more information");
 			return;
 		}				
 		if (strcmp(arg1,"--exec")==0)		
@@ -128,7 +128,7 @@ void runCommand(char command[])
 		{
 			if(fileName==NULL)
 			{
-				printf("Missing <filename> for rm. See \"help\" for more information");
+				printf("Missing <xfs_filename> for rm. See \"help\" for more information");
 				return;
 			}
 			deleteExecutableFromDisk(fileName);	 	//removes executable file fron disk.
@@ -141,7 +141,7 @@ void runCommand(char command[])
 		{
 			if(fileName==NULL)
 			{
-				printf("Missing <filename> for rm. See \"help\" for more information");
+				printf("Missing <xfs_filename> for rm. See \"help\" for more information");
 				return;
 			}
 			deleteDataFromDisk(fileName);			 //removes data file from disk..		
@@ -188,7 +188,7 @@ void runCommand(char command[])
 		}
 		else
 		{
-			printf("Missing <filename> for cat. See \"help\" for more information");
+			printf("Missing <xfs_filename> for cat. See \"help\" for more information");
 			return;
 		}	
 	}
