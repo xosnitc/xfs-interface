@@ -774,35 +774,6 @@ int loadExHandlerToDisk(char* fileName)
 }
 
 
-/*
-  This function initialises the fat and basic block entries for the init process.
-  The location of init process on the disk is fixed.
-*/
-int initializeINIT()
-{
-	int locationOfFat, i;
-	locationOfFat = CheckRepeatedName(INIT_NAME);
-	if( locationOfFat >= FAT_SIZE ) 
-	{
-		i = FindEmptyFatEntry();
-		if(i == -1)
-		{
-			printf("Disk error: IT would be proper to format the disk before proceeding\n");
-			return -1;
-		}
-		AddEntryToMemFat(i, INIT_NAME, SIZE_EXEFILE * BLOCK_SIZE, INIT_BASIC_BLOCK);
-		for(i = FAT; i < FAT + NO_OF_FAT_BLOCKS ; i++)
-			writeToDisk(i,i);				//updating disk fat entry note:check for correctness
-		emptyBlock(TEMP_BLOCK);				//note:need to modify this
-
-		for( i = 0 ; i < NO_OF_INIT_BLOCKS ; i++ )	//updating basic block for file on disk
-			storeValue(disk[TEMP_BLOCK].word[i],INIT_BASIC_BLOCK + i); 
-		writeToDisk(TEMP_BLOCK, INIT_BASIC_BLOCK);
-	}
-}
-
-
-
 
 /*
   This function displays the content of the files stored in the disk.
@@ -818,35 +789,19 @@ void displayFileContents(char *name)
 		return;
 	}
 	
-	if(strcmp(name,INIT_NAME)==0)
+	
+	getDataBlocks(blk,locationOfFat,ASSEMBLY_CODE);
+
+	for(k = 1; k <= SIZE_EXEFILE; k++)
 	{
-		for(k = 0; k < NO_OF_INIT_BLOCKS; k++)
+		if(blk[k]!=0)
 		{
 			emptyBlock(TEMP_BLOCK);
-			readFromDisk(TEMP_BLOCK,INIT_BASIC_BLOCK+k);
+			readFromDisk(TEMP_BLOCK,blk[k]);
 			for(l=0;l<BLOCK_SIZE;l++)
 			{
 				if(strcmp(disk[TEMP_BLOCK].word[l],"\0")!=0)
 					printf("%d - %s   \n",l,disk[TEMP_BLOCK].word[l]);
-			}
-		}
-		
-	}
-	else
-	{
-		getDataBlocks(blk,locationOfFat,ASSEMBLY_CODE);
-	
-		for(k = 1; k <= SIZE_EXEFILE; k++)
-		{
-			if(blk[k]!=0)
-			{
-				emptyBlock(TEMP_BLOCK);
-				readFromDisk(TEMP_BLOCK,blk[k]);
-				for(l=0;l<BLOCK_SIZE;l++)
-				{
-					if(strcmp(disk[TEMP_BLOCK].word[l],"\0")!=0)
-						printf("%d - %s   \n",l,disk[TEMP_BLOCK].word[l]);
-				}
 			}
 		}
 	}
@@ -876,8 +831,9 @@ void copyBlocksToFile (int startblock,int endblock,char *filename)
 				fprintf(fp,"%s\n",disk[TEMP_BLOCK].word[j]);
 			}
 		}
+		fclose(fp);
 	}
-	fclose(fp);
+	
 }
 
 /*

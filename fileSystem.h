@@ -161,11 +161,6 @@ int loadTimerCode(char* name);
 int loadExHandlerToDisk(char* name);
 
 /*
-  This function initialises the fat and basic block entries for the init process.
-*/
-int initializeINIT();
-
-/*
   This function copies the init program to its proper location on the disk.
 */
 int loadINITCode(char* name);

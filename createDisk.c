@@ -43,7 +43,6 @@ void createDisk(int format){
 			}
 			writeToDisk(FAT+j, FAT+j);
 		}
-		initializeINIT();
 	}
 	else
 	{
