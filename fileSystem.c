@@ -455,6 +455,7 @@ int loadExecutableToDisk(char *name)
 	
 	filename[15]='\0';
 		
+	addext(filename,".xsm");
 
 	expandpath(name);
 	fileToBeLoaded = fopen(name, "r");
@@ -570,7 +571,8 @@ int loadDataToDisk(char *name)
 		strcpy(filename,name);	
 	
 	filename[15]='\0';
-	
+	addext(filename,".dat");
+
 	expandpath(name);
 	fileToBeLoaded = fopen(name, "r");
 	if(fileToBeLoaded == NULL)
@@ -878,4 +880,25 @@ void expandpath(char *path) // To expand environment variables in path
 		sprintf(path,"%s/%s",getenv(++token)!=NULL?getenv(token):token-1,rem_path);
 	else
 		sprintf(path,"%s",getenv(++token)!=NULL?getenv(token):token-1);
+}
+
+void addext(char *filename, char *ext)
+{
+	int l = strlen(filename);
+	if(l>=16)
+	{
+		strcpy(filename+11,ext);
+		return;
+	}
+	if(strcmp(filename+l-4,ext)!=0)
+	{
+		strcat(filename,ext);
+		l = strlen(filename);
+
+		if(l>=16)
+		{
+			strcpy(filename+11,ext);
+			return;
+		}
+	}
 }

@@ -220,5 +220,8 @@ int deleteDataFromDisk(char *name);
 */
 void expandpath(char *path);
 
-
+/*
+  This function adds extensions (.dat or .xsm) for files loaded into xfs
+*/
+void addext(char *filename, char *ext);
 #endif
