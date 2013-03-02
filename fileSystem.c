@@ -442,18 +442,22 @@ int loadExecutableToDisk(char *name)
 {
 	FILE *fileToBeLoaded;
 	int freeBlock[SIZE_EXEFILE_BASIC];
-	int i,j,k,file_size=0,num_of_lines=0,num_of_blocks_reqd=0;
+	int i,j,k,l,file_size=0,num_of_lines=0,num_of_blocks_reqd=0;
 	for(i=0;i<SIZE_EXEFILE_BASIC;i++)
 		freeBlock[i]=0;
 	char c='\0',*s;
-	char filename[16];
+	char filename[50];
 	s = strrchr(name,'/');
 	if(s!=NULL)
 		strcpy(filename,s+1);
 	else
 		strcpy(filename,name);	
 	
-	fileToBeLoaded = fopen(filename, "r");
+	filename[15]='\0';
+		
+
+	expandpath(name);
+	fileToBeLoaded = fopen(name, "r");
 	if(fileToBeLoaded == NULL){
 	    printf("File %s not found.\n", name);
 	    return -1;
@@ -490,7 +494,7 @@ int loadExecutableToDisk(char *name)
 				return -1;
 			}
 	}
-	i = CheckRepeatedName(name);
+	i = CheckRepeatedName(filename);
 	if( i < FAT_SIZE ){
 		printf("Disk already contains the file with this name. Try again with a different name.\n");
 		FreeUnusedBlock(freeBlock, SIZE_EXEFILE_BASIC);
@@ -558,14 +562,17 @@ int loadDataToDisk(char *name)
 	for(i=0;i<MAX_DATAFILE_SIZE_BASIC;i++)
 		freeBlock[i]=0;
 	char c='\0',*s;
-	char filename[16];
+	char filename[50];
 	s = strrchr(name,'/');
 	if(s!=NULL)
 		strcpy(filename,s+1);
 	else
 		strcpy(filename,name);	
-		
-	fileToBeLoaded = fopen(filename, "r");
+	
+	filename[15]='\0';
+	
+	expandpath(name);
+	fileToBeLoaded = fopen(name, "r");
 	if(fileToBeLoaded == NULL)
 	{
 		printf("File %s not found.\n", name);
@@ -603,7 +610,7 @@ int loadDataToDisk(char *name)
 				return -1;
 			}
 	}
-	i = CheckRepeatedName(name);
+	i = CheckRepeatedName(filename);
 	if( i < FAT_SIZE )
 	{
 		printf("Disk already contains the file with this name. Try again with a different name.\n");
@@ -657,6 +664,7 @@ int loadDataToDisk(char *name)
 int loadINITCode(char* fileName ){
 	FILE * fp;
 	int j;
+	expandpath(fileName);
 	fp = fopen(fileName, "r");
 	if(fp == NULL)
 	{
@@ -684,6 +692,7 @@ int loadOSCode(char* fileName){
 
 	emptyBlock(TEMP_BLOCK);
 	writeToDisk(TEMP_BLOCK,OS_STARTUP_CODE);
+	expandpath(fileName);
 	FILE* fp = fopen(fileName, "r");
 	int j;
 	if(fp == NULL)
@@ -709,6 +718,7 @@ int loadOSCode(char* fileName){
 */
 int loadIntCode(char* fileName, int intNo)
 {
+	expandpath(fileName);
 	FILE* fp = fopen(fileName, "r");
 	int j;
 	if(fp == NULL)
@@ -732,6 +742,7 @@ int loadIntCode(char* fileName, int intNo)
 */
 int loadTimerCode(char* fileName)
 {
+	expandpath(fileName);
 	FILE* fp = fopen(fileName, "r");
 	int j;
 	if(fp == NULL)
@@ -755,6 +766,7 @@ int loadTimerCode(char* fileName)
 */
 int loadExHandlerToDisk(char* fileName)
 {
+	expandpath(fileName);
 	FILE* fp = fopen(fileName, "r");
 	int j;
 	if(fp == NULL)
@@ -814,6 +826,7 @@ void copyBlocksToFile (int startblock,int endblock,char *filename)
 {
 	int i,j;
 	FILE *fp;
+	expandpath(filename);
 	fp = fopen(filename,"w");
 	if(fp == NULL)
 	{
@@ -857,3 +870,12 @@ void displayDiskFreeList()
 
 
 
+void expandpath(char *path) // To expand environment variables in path
+{
+	char *rem_path = strdup(path);
+	char *token = strsep(&rem_path, "/");
+	if(rem_path!=NULL)
+		sprintf(path,"%s/%s",getenv(++token)!=NULL?getenv(token):token-1,rem_path);
+	else
+		sprintf(path,"%s",getenv(++token)!=NULL?getenv(token):token-1);
+}

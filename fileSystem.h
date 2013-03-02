@@ -215,4 +215,10 @@ int loadDataToDisk(char *name);
 */
 int deleteDataFromDisk(char *name);
 
+/*
+  This function expands environment variables in path
+*/
+void expandpath(char *path);
+
+
 #endif
