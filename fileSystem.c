@@ -471,6 +471,7 @@ int loadExecutableToDisk(char *name)
 	
 	while(c!=EOF)
 	{
+		//fgets(buffer1,16,f);
 		c=fgetc(fileToBeLoaded);
 		if(c=='\n')
 			num_of_lines++;
@@ -559,7 +560,7 @@ int loadDataToDisk(char *name)
 {
 	FILE *fileToBeLoaded;
 	int freeBlock[MAX_DATAFILE_SIZE_BASIC];
-	int i,j,k,num_of_lines=0,num_of_blocks_reqd=0,file_size=0;
+	int i,j,k,num_of_chars=0,num_of_blocks_reqd=0,file_size=0;
 	for(i=0;i<MAX_DATAFILE_SIZE_BASIC;i++)
 		freeBlock[i]=0;
 	char c='\0',*s;
@@ -587,15 +588,11 @@ int loadDataToDisk(char *name)
 		return -1;
 	}
 	
-	while(c!=EOF)
-	{
-		c=fgetc(fileToBeLoaded);
-		if(c=='\n')
-			num_of_lines++;
-	}
-	//printf("\nNum of lines = %d",num_of_lines);
-	num_of_blocks_reqd = (num_of_lines / BLOCK_SIZE) + 1;
+	fseek(fileToBeLoaded, 0L, SEEK_END);
 	
+	num_of_chars = ftell(fileToBeLoaded);
+	num_of_blocks_reqd = ((num_of_chars/16) / BLOCK_SIZE) + 1;
+	printf("\n chars = %d, Blocks = %d",num_of_chars,num_of_blocks_reqd);
 	if(num_of_blocks_reqd > MAX_DATAFILE_SIZE)
 	{
 		printf("The size of file exceeds %d blocks",MAX_DATAFILE_SIZE);
