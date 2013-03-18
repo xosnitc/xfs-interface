@@ -223,7 +223,6 @@ int main(){
   int  intNo;
   char fileName[51], option;
   FILE* diskFp;
-  createDisk(DO_NOT_FORMAT); //in case the disk file is not present
   loadFileToVirtualDisk();	
   cli();					//Loads the Command Line Interface
   return 0;
