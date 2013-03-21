@@ -11,6 +11,13 @@
       shown as output.
 */
 void listAllFiles(){
+	int fd;
+	fd = open(DISK_NAME, O_RDONLY, 0666);
+	if(fd < 0){
+	  printf("Unable to Open Disk File\n");
+	  return;
+	}
+	close(fd);
 	int i,j;
 	for(j = FAT ; j < FAT + NO_OF_FAT_BLOCKS ; j++)
 	{
@@ -791,6 +798,14 @@ int loadExHandlerToDisk(char* fileName)
 */
 void displayFileContents(char *name)
 {
+	int fd;
+	fd = open(DISK_NAME, O_RDONLY, 0666);
+	if(fd < 0){
+	  printf("Unable to Open Disk File\n");
+	  return;
+	}
+	
+	close(fd);
 	int i,j,k,l,flag=0,locationOfFat;
 	int blk[SIZE_EXEFILE_BASIC];
 	
@@ -823,6 +838,13 @@ void displayFileContents(char *name)
 */
 void copyBlocksToFile (int startblock,int endblock,char *filename)
 {
+	int fd;
+	fd = open(DISK_NAME, O_RDONLY, 0666);
+	if(fd < 0){
+	  printf("Unable to Open Disk File\n");
+	  return;
+	}
+	close(fd);
 	int i,j;
 	FILE *fp;
 	expandpath(filename);
@@ -853,6 +875,13 @@ void copyBlocksToFile (int startblock,int endblock,char *filename)
 */
 void displayDiskFreeList()
 {
+	int fd;
+	fd = open(DISK_NAME, O_RDONLY, 0666);
+	if(fd < 0){
+	  printf("Unable to Open Disk File\n");
+	  return;
+	}
+	close(fd);
 	int i,j,no_of_free_blocks=0;
 	for(j = 0; j < NO_OF_FREE_LIST_BLOCKS; j++)
 	{
