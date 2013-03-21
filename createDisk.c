@@ -20,7 +20,6 @@ void createDisk(int format){
 		fd = open(DISK_NAME, O_CREAT | O_TRUNC | O_SYNC, 0666);
 		clearVirtDisk();
 		close(fd);
-		// loadFileToVirtualDisk();		note: commented this line
 		int i=0,j=0;
 		
 		for(j=0; j<(NO_OF_FREE_LIST_BLOCKS*BLOCK_SIZE); j++)

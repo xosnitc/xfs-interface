@@ -38,12 +38,11 @@ void listAllFiles(){
 */
 int CheckRepeatedName(char *name){
 	int i,j;
-	//name = strcat(name, "\n");
 	for(j = FAT ; j < FAT + NO_OF_FAT_BLOCKS ; j++)
 	{
 		for(i = FATENTRY_FILENAME ; i < BLOCK_SIZE ; i = i + FATENTRY_SIZE)
 		{
-			if(strcmp(disk[j].word[i],name) == 0 && getValue(disk[j].word[i]) != -1)		//note: modified here
+			if(strcmp(disk[j].word[i],name) == 0 && getValue(disk[j].word[i]) != -1)		
 				return (((j - FAT) * BLOCK_SIZE) + i);
 		}
 	}
@@ -63,9 +62,8 @@ int getDataBlocks(int *basicBlockAddr, int locationOfFat, int type)
 	
 	int i;
 	basicBlockAddr[0] = getValue(disk[FAT + locationOfFat / BLOCK_SIZE].word[locationOfFat % BLOCK_SIZE + FATENTRY_BASICBLOCK]);
-	readFromDisk(TEMP_BLOCK,basicBlockAddr[0]);                 //note:need to modify this
-	//printf("Basic block = %d\n",basicBlockAddr[0]);
-	if(type==0)			//ASSEMBLY CODE
+	readFromDisk(TEMP_BLOCK,basicBlockAddr[0]);               
+	if(type==0)				//ASSEMBLY CODE
 	{
 		for( i = 0 ; i < SIZE_EXEFILE ; i++)
 			basicBlockAddr[i+1] = getValue(disk[TEMP_BLOCK].word[i]);
@@ -81,14 +79,6 @@ int getDataBlocks(int *basicBlockAddr, int locationOfFat, int type)
 
 
 
-// int dispBasicBlock(int locationOfFat){
-// 	int i;
-// 	readFromDisk(TEMP_BLOCK,getValue(disk[FAT + locationOfFat / BLOCK_SIZE].word[locationOfFat % BLOCK_SIZE + FATENTRY_BASICBLOCK]));                 //note:need to modify this
-// 	for( i = 0 ; i < SIZE_EXEFILE ; i++){
-// 		printf("%d\n", getValue(disk[TEMP_BLOCK].word[i]));
-// 	}
-// 	return 0;
-// }
 
 
 
@@ -103,12 +93,6 @@ void FreeUnusedBlock(int *freeBlock, int size){
 		//printf("Block Num = %d\nLocation = %d", freeBlock[i],freeBlock[i] % BLOCK_SIZE );
 		storeValue( disk[DISK_FREE_LIST + freeBlock[i] / BLOCK_SIZE].word[freeBlock[i] % BLOCK_SIZE] , 0 );
 	}
-	
-// 	for( i = 0 ; i < size ; i++){
-// 		printf("Block Num = %d\n %d\n", freeBlock[i], sizeof(freeBlock)/sizeof(int));
-// 		printf("%d\n", getValue(disk[DISK_FREE_LIST + freeBlock[i] / BLOCK_SIZE].word[freeBlock[i] % BLOCK_SIZE]));
-// 	}
-
 }
 
 
@@ -143,7 +127,6 @@ int removeFatEntry(int locationOfFat){
 int deleteExecutableFromDisk(char *name)
 {
 	int locationOfFat,i,blockAddresses[SIZE_EXEFILE_BASIC];   //0-basic block , 1,2,3-code+data blocks
-	//name = strcat(name, "\n");
 	if(strcmp(name, INIT_NAME) == 0){
 	  printf("Init cannot be removed\n");
 	  return 0;
@@ -153,11 +136,8 @@ int deleteExecutableFromDisk(char *name)
 		printf("File not found\n");
 		return -1;
 	}
-	//printf("location of FAT = %d\n",locationOfFat);
 	getDataBlocks(blockAddresses,locationOfFat,ASSEMBLY_CODE);		
 	FreeUnusedBlock(blockAddresses, SIZE_EXEFILE_BASIC);
-// 	writeToDisk(DISK_FREE_LIST, DISK_FREE_LIST);
-// 	writeToDisk(DISK_FREE_LIST+1, DISK_FREE_LIST+1);
 	removeFatEntry(locationOfFat);
 	for(i = FAT ; i < FAT + NO_OF_FAT_BLOCKS ; i++){
 		writeToDisk(i,i);
@@ -288,7 +268,6 @@ int FindEmptyFatEntry(){
 	}
 	if( entryNumber > FAT_SIZE ){
 		printf("FAT  is full.\n");
-		// note:FreeUnusedBlock(freeBlock);
 		return -1;
 	}
 	return (entryNumber-FATENTRY_BASICBLOCK);
@@ -301,7 +280,6 @@ int FindEmptyFatEntry(){
   The first arguement is a relative address
 */
 void AddEntryToMemFat(int startIndexInFat, char *nameOfFile, int size_of_file, int addrOfBasicBlock){
-	//char* str = strcat(nameOfFile,"\n");		//NOTE: Changed here
 	strcpy(disk[FAT + (startIndexInFat / BLOCK_SIZE)].word[startIndexInFat % BLOCK_SIZE],nameOfFile);
 	storeValue( disk[FAT + (startIndexInFat / BLOCK_SIZE)].word[startIndexInFat % BLOCK_SIZE + FATENTRY_FILESIZE] , size_of_file );
 	storeValue( disk[FAT + (startIndexInFat / BLOCK_SIZE)].word[startIndexInFat % BLOCK_SIZE + FATENTRY_BASICBLOCK] , addrOfBasicBlock );
@@ -325,8 +303,6 @@ int writeFileToDisk(FILE *f, int blockNum, int type){
 		int line_count=0,flag=0,k=0;
 		for(i = 0; i < (BLOCK_SIZE/2); i=i++)
 		{
-			//fgets(buffer,32,f);
-			//printf("%d - %s\n",i,buffer);
 			fgets(temp,100,f);
 			
 			string_start=strchr(temp,'"');
@@ -334,7 +310,6 @@ int writeFileToDisk(FILE *f, int blockNum, int type){
 			{
 				for(k=0;k<31;k++)
 					buffer[k]=temp[k];
-				//buffer[k+1]='\n';
 				buffer[k]='\0';
 			}
 			else
@@ -356,7 +331,6 @@ int writeFileToDisk(FILE *f, int blockNum, int type){
 				}
 			}
 		
-			//printf("%d - %s",i,buffer);
 			
 			if(strlen(buffer)>3)
 			{
@@ -410,7 +384,6 @@ int writeFileToDisk(FILE *f, int blockNum, int type){
 				writeToDisk(TEMP_BLOCK,blockNum);
 				return -1;
 			 }
-			 //bzero(buffer,31);
 			
 		}
 		writeToDisk(TEMP_BLOCK,blockNum);
@@ -421,9 +394,7 @@ int writeFileToDisk(FILE *f, int blockNum, int type){
 		char buffer1[16],c;
 		for(i = 0; i < BLOCK_SIZE; i=i++)
 		{
-			fgets(buffer1,16,f);
-			//printf("%d - %s\n",i,buffer1);
-			
+			fgets(buffer1,16,f);			
 			strcpy(disk[TEMP_BLOCK].word[i],buffer1);
 			if(feof(f))
 			{
@@ -470,7 +441,6 @@ int loadExecutableToDisk(char *name)
 	    printf("File %s not found.\n", name);
 	    return -1;
 	  }
-	//name = strcat(name, "\n");  //NOTE:   modified here
 	if(fileToBeLoaded == NULL){
 		printf("The file could not be opened");
 		return -1;
@@ -478,7 +448,6 @@ int loadExecutableToDisk(char *name)
 	
 	while(c!=EOF)
 	{
-		//fgets(buffer1,16,f);
 		c=fgetc(fileToBeLoaded);
 		if(c=='\n')
 			num_of_lines++;
@@ -491,7 +460,6 @@ int loadExecutableToDisk(char *name)
 		printf("The size of file exceeds %d blocks",SIZE_EXEFILE);
 		return -1;
 	}
-	//printf("\nNum of lines = %d",num_of_lines);
 	
 	fseek(fileToBeLoaded,0,SEEK_SET);
 	
@@ -525,7 +493,6 @@ int loadExecutableToDisk(char *name)
 	for( i = 1 ; i < SIZE_EXEFILE_BASIC ; i++ )
 	{
 		storeValue(disk[TEMP_BLOCK].word[i-1],freeBlock[i]); 
-		//printf("\n%d",getValue(disk[TEMP_BLOCK].word[i-1]));
 	}
 	writeToDisk(TEMP_BLOCK,freeBlock[0]);
 	
@@ -535,23 +502,11 @@ int loadExecutableToDisk(char *name)
 		file_size++;
 	}
 	
-	//emptyBlock(TEMP_BLOCK);
-	//readFromDisk(TEMP_BLOCK,freeBlock[0]);	
-	//storeValue(disk[TEMP_BLOCK].word[i-1],0);
-	
-	/*for( i = 0 ; i < SIZE_EXEFILE ; i++ )
-	{
-		printf("\n%d",getValue(disk[TEMP_BLOCK].word[i]));
-	}*/
-	//writeToDisk(TEMP_BLOCK,freeBlock[0]);
-	  
-	  
-	  
-	AddEntryToMemFat(k, filename, file_size * BLOCK_SIZE, freeBlock[0]);		
- 	//printf("FAT %d\n", i);
- 	//printf("basic %d\n", freeBlock[0]);
+
+
+	AddEntryToMemFat(k, filename, file_size * BLOCK_SIZE, freeBlock[0]);	
 	for(i = FAT; i < FAT + NO_OF_FAT_BLOCKS ; i++){
-		writeToDisk(i,i);				//updating disk fat entry note:check for correctness
+		writeToDisk(i,i);				
 	}
 	
       close(fileToBeLoaded);
@@ -588,7 +543,6 @@ int loadDataToDisk(char *name)
 		printf("File %s not found.\n", name);
 		return -1;
 	}
-	//name = strcat(name, "\n");  //NOTE:   modified here
 	if(fileToBeLoaded == NULL)
 	{
 		printf("The file could not be opened");
@@ -640,7 +594,6 @@ int loadDataToDisk(char *name)
 	for( i = 1 ; i < MAX_DATAFILE_SIZE_BASIC ; i++ )
 	{
 		storeValue(disk[TEMP_BLOCK].word[i-1],freeBlock[i]); 
-		//printf("\n%d",getValue(disk[TEMP_BLOCK].word[i-1]));
 	}
 	writeToDisk(TEMP_BLOCK,freeBlock[0]);
 	
@@ -652,8 +605,6 @@ int loadDataToDisk(char *name)
 	
 	  
 	AddEntryToMemFat(k, filename, file_size * BLOCK_SIZE, freeBlock[0]);		
- 	//printf("FAT %d\n", i);
- 	//printf("basic %d\n", freeBlock[0]);
 	for(i = FAT; i < FAT + NO_OF_FAT_BLOCKS ; i++){
 		writeToDisk(i,i);				//updating disk fat entry note:check for correctness
 	}
@@ -852,7 +803,6 @@ void copyBlocksToFile (int startblock,int endblock,char *filename)
 	if(fp == NULL)
 	{
 		printf("File %s not found.\n", filename);
-		//return -1;
 	}
 	else
 	{
@@ -898,7 +848,8 @@ void displayDiskFreeList()
 
 
 
-void expandpath(char *path) // To expand environment variables in path
+// To expand environment variables in path
+void expandpath(char *path) 		
 {
 	char *rem_path = strdup(path);
 	char *token = strsep(&rem_path, "/");
