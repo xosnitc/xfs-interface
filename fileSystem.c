@@ -845,7 +845,7 @@ void displayDiskFreeList()
 	{
 		for(i = 0; i < BLOCK_SIZE; i++)
 		{
-			printf("%d - %s  \n",i,disk[DISK_FREE_LIST+j].word[i]);
+			printf("%d \t - \t %s  \n",i,disk[DISK_FREE_LIST+j].word[i]);
 			if(getValue(disk[DISK_FREE_LIST+j].word[i])==0)
 				no_of_free_blocks++;
 		}
