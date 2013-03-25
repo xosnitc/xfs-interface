@@ -59,8 +59,8 @@ Declarations for files
 */
 #define SIZE_EXEFILE_BASIC 4
 #define SIZE_EXEFILE 3
-#define MAX_DATAFILE_SIZE_BASIC 129
-#define MAX_DATAFILE_SIZE 128
+#define MAX_DATAFILE_SIZE_BASIC 257
+#define MAX_DATAFILE_SIZE 256
 
 
 /*

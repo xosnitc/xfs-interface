@@ -108,10 +108,9 @@ int removeFatEntry(int locationOfFat){
 	int i;
 	int blockNumber = FAT + locationOfFat / BLOCK_SIZE;
 	int startWordNumber = locationOfFat % BLOCK_SIZE;
-	for( i = startWordNumber ; i < startWordNumber + FATENTRY_SIZE ; i++ ){
-		strcpy(disk[blockNumber].word[i],"\0");
-	}
+	storeValue(disk[blockNumber].word[startWordNumber + FATENTRY_FILENAME], -1);
 	storeValue(disk[blockNumber].word[startWordNumber + FATENTRY_BASICBLOCK], -1);
+	storeValue(disk[blockNumber].word[startWordNumber + FATENTRY_FILESIZE], 0);
 	return 0;
 }
 
@@ -422,7 +421,7 @@ int loadExecutableToDisk(char *name)
 	int freeBlock[SIZE_EXEFILE_BASIC];
 	int i,j,k,l,file_size=0,num_of_lines=0,num_of_blocks_reqd=0;
 	for(i=0;i<SIZE_EXEFILE_BASIC;i++)
-		freeBlock[i]=0;
+		freeBlock[i]=-1;
 	char c='\0',*s;
 	char filename[50];
 	s = strrchr(name,'/');
@@ -524,7 +523,7 @@ int loadDataToDisk(char *name)
 	int freeBlock[MAX_DATAFILE_SIZE_BASIC];
 	int i,j,k,num_of_chars=0,num_of_blocks_reqd=0,file_size=0;
 	for(i=0;i<MAX_DATAFILE_SIZE_BASIC;i++)
-		freeBlock[i]=0;
+		freeBlock[i]=-1;
 	char c='\0',*s;
 	char filename[50];
 	s = strrchr(name,'/');
