@@ -9,6 +9,7 @@ void cli()
 {
   char command[100], c;
   int i,j;
+		
   printf("Unix-XFS Interace Version 1.0. \nType \"help\" for  getting a list of commands.");
   while(1)
   {
@@ -22,9 +23,8 @@ void cli()
   	}
   	command[i] = '\0';
 	if(command[0]!='\0')
-  		runCommand(command);
+  			runCommand(command);
   }
-
 }
 
 /* 
@@ -220,10 +220,17 @@ void runCommand(char command[])
 
 
 int main(){
-  int  intNo;
-  char fileName[51], option;
-  FILE* diskFp;
-  loadFileToVirtualDisk();	
-  cli();					//Loads the Command Line Interface
-  return 0;
+	int  intNo, fd;
+	char fileName[51], option;
+	FILE* diskFp;
+	
+	fd = open(DISK_NAME, O_RDONLY, 0666);
+	if(fd > 0)
+	{
+		loadFileToVirtualDisk();
+	}
+	close(fd);
+		
+	cli();					//Loads the Command Line Interface
+	return 0;
 }

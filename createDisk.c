@@ -25,7 +25,7 @@ void createDisk(int format){
 		for(j=0; j<(NO_OF_FREE_LIST_BLOCKS*BLOCK_SIZE); j++)
 		{
 			i=j/BLOCK_SIZE;
-			if( (j>=DATA_START_BLOCK) && (j<(DATA_START_BLOCK+NO_OF_DATA_BLOCKS) ))
+			if( (j>=DATA_START_BLOCK) && (j<NO_OF_DISK_BLOCKS ))
 				storeValue(disk[DISK_FREE_LIST+i].word[j], 0);
 			else
 				storeValue(disk[DISK_FREE_LIST+i].word[j], 1);
@@ -39,6 +39,14 @@ void createDisk(int format){
 			for(i=FATENTRY_BASICBLOCK; i<BLOCK_SIZE; i=i+FATENTRY_SIZE)
 			{
 				storeValue(disk[FAT + j].word[i], -1);
+			}
+			for(i=FATENTRY_FILENAME; i<BLOCK_SIZE; i=i+FATENTRY_SIZE)
+			{
+				storeValue(disk[FAT + j].word[i], -1);
+			}
+			for(i=FATENTRY_FILESIZE; i<BLOCK_SIZE; i=i+FATENTRY_SIZE)
+			{
+				storeValue(disk[FAT + j].word[i], 0);
 			}
 			writeToDisk(FAT+j, FAT+j);
 		}
