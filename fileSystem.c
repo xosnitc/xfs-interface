@@ -393,7 +393,7 @@ int writeFileToDisk(FILE *f, int blockNum, int type){
 		char buffer1[16],c;
 		for(i = 0; i < BLOCK_SIZE; i=i++)
 		{
-			fgets(buffer1,16,f);			
+			fgets(buffer1,16,f);
 			strcpy(disk[TEMP_BLOCK].word[i],buffer1);
 			if(feof(f))
 			{
@@ -521,11 +521,11 @@ int loadDataToDisk(char *name)
 {
 	FILE *fileToBeLoaded;
 	int freeBlock[MAX_DATAFILE_SIZE_BASIC];
-	int i,j,k,num_of_chars=0,num_of_blocks_reqd=0,file_size=0;
+	int i,j,k,num_of_chars=0,num_of_blocks_reqd=0,file_size=0,num_of_words=0;
 	for(i=0;i<MAX_DATAFILE_SIZE_BASIC;i++)
 		freeBlock[i]=-1;
 	char c='\0',*s;
-	char filename[50];
+	char filename[50],buf[16];
 	s = strrchr(name,'/');
 	if(s!=NULL)
 		strcpy(filename,s+1);
@@ -551,8 +551,17 @@ int loadDataToDisk(char *name)
 	fseek(fileToBeLoaded, 0L, SEEK_END);
 	
 	num_of_chars = ftell(fileToBeLoaded);
-	num_of_blocks_reqd = ((num_of_chars/16) / BLOCK_SIZE) + 1;
-	printf("\n chars = %d, Blocks = %d",num_of_chars,num_of_blocks_reqd);
+	
+	fseek(fileToBeLoaded,0,SEEK_SET);
+	while(1)
+	{
+		fgets(buf,16,fileToBeLoaded);
+		num_of_words++;
+		if(feof(fileToBeLoaded))
+			break;
+	}
+	num_of_blocks_reqd = (num_of_words/512) + 1;
+	//printf("\n Chars = %d, Words = %d, Blocks(chars) = %d, Blocks(words) = %d",num_of_chars,num_of_words,num_of_blocks_reqd,(num_of_words/512));
 	if(num_of_blocks_reqd > MAX_DATAFILE_SIZE)
 	{
 		printf("The size of file exceeds %d blocks",MAX_DATAFILE_SIZE);
