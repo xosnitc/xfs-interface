@@ -7,24 +7,24 @@ Function to invoke Command Line interface
 */
 void cli()
 {
-  char command[100], c;
-  int i,j;
-		
-  printf("Unix-XFS Interace Version 1.0. \nType \"help\" for  getting a list of commands.");
-  while(1)
-  {
-  	i=0;
-  	printf("\n# ");
-  	scanf("%c",&c);
-  	while(c!='\n')
-  	{  	
-		command[i++] = c;
+	char command[100], c;
+	int i,j;
+	
+	printf("Unix-XFS Interace Version 1.0. \nType \"help\" for  getting a list of commands.");
+	while(1)
+	{
+		i=0;
+		printf("\n# ");
 		scanf("%c",&c);
-  	}
-  	command[i] = '\0';
-	if(command[0]!='\0')
-  			runCommand(command);
-  }
+		while(c!='\n')
+		{  	
+			command[i++] = c;
+			scanf("%c",&c);
+		}
+		command[i] = '\0';
+		if(command[0]!='\0')
+				runCommand(command);
+	}
 }
 
 /* 
@@ -69,6 +69,13 @@ void runCommand(char command[])
 	
 	else if (strcmp(name,"load")==0) 	//loads files to XFS disk.
 	{
+		int fd;
+		fd = open(DISK_NAME, O_RDONLY, 0666);
+		if(fd < 0){
+		  printf("Unable to Open Disk File\n");
+		  return;
+		}
+		close(fd);
 		arg1 = strtok(NULL, " ");
 		arg2 = strtok(NULL, " ");	
 
@@ -115,6 +122,13 @@ void runCommand(char command[])
 	
 	else if (strcmp(name,"rm")==0) 	//removes files to XFS disk.
 	{
+		int fd;
+		fd = open(DISK_NAME, O_RDONLY, 0666);
+		if(fd < 0){
+		  printf("Unable to Open Disk File\n");
+		  return;
+		}
+		close(fd);
 		arg1 = strtok(NULL, " ");
 		arg2 = strtok(NULL, " ");	
 		

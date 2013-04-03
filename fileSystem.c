@@ -182,9 +182,13 @@ int deleteDataFromDisk(char *name)
 int deleteINITFromDisk()
 {
 	emptyBlock(TEMP_BLOCK);
-	writeToDisk(TEMP_BLOCK,INIT_BASIC_BLOCK);
-	writeToDisk(TEMP_BLOCK,INIT_BASIC_BLOCK+1);
-	writeToDisk(TEMP_BLOCK,INIT_BASIC_BLOCK+2);
+	int i;
+	for (i=0; i<NO_OF_INIT_BLOCKS; i++)
+		writeToDisk(TEMP_BLOCK,INIT_BASIC_BLOCK+i);	
+
+	//writeToDisk(TEMP_BLOCK,INIT_BASIC_BLOCK);
+	//writeToDisk(TEMP_BLOCK,INIT_BASIC_BLOCK+1);
+	//writeToDisk(TEMP_BLOCK,INIT_BASIC_BLOCK+2);
 	return 0;
 }
 
@@ -194,7 +198,9 @@ int deleteINITFromDisk()
 int deleteOSCodeFromDisk()
 {
 	emptyBlock(TEMP_BLOCK);
-	writeToDisk(TEMP_BLOCK,OS_STARTUP_CODE);
+	int i;
+	for (i=0;i<OS_STARTUP_CODE_SIZE; i++)
+		writeToDisk(TEMP_BLOCK,OS_STARTUP_CODE+i);
 	return 0;
 }
 
@@ -204,7 +210,9 @@ int deleteOSCodeFromDisk()
 int deleteTimerFromDisk()
 {
 	emptyBlock(TEMP_BLOCK);
-	writeToDisk(TEMP_BLOCK,TIMERINT);
+	int i;
+	for (i=0;i<TIMERINT_SIZE; i++)
+		writeToDisk(TEMP_BLOCK,TIMERINT+i);
 	return 0;
 }
 
@@ -214,7 +222,9 @@ int deleteTimerFromDisk()
 int deleteIntCode(int intNo)
 {
 	emptyBlock(TEMP_BLOCK);
-	writeToDisk(TEMP_BLOCK,intNo + INT1 -1);
+	int i;
+	for (i=0;i<INT1_SIZE; i++)
+		writeToDisk(TEMP_BLOCK,((intNo - 1) * INT1_SIZE)  + INT1 + i);
 	return 0;
 }
 
@@ -224,7 +234,9 @@ int deleteIntCode(int intNo)
 int deleteExHandlerFromDisk()
 {
 	emptyBlock(TEMP_BLOCK);
-	writeToDisk(TEMP_BLOCK,EX_HANDLER);
+	int i;
+	for (i=0;i<EX_HANDLER_SIZE; i++)
+		writeToDisk(TEMP_BLOCK,EX_HANDLER + i);
 	return 0;
 }
 
@@ -292,7 +304,8 @@ void AddEntryToMemFat(int startIndexInFat, char *nameOfFile, int size_of_file, i
   NOTE: 1. EOF is set only after reading beyond the end of the file. This is the reason why the if condition is needed is needed.
 	2. Also the function must read till EOF or BLOCK_SIZE line so that successive read proceeds accordingly
 */
-int writeFileToDisk(FILE *f, int blockNum, int type){
+int writeFileToDisk(FILE *f, int blockNum, int type)
+{
 	int i, line=0,j;
 	char buffer[32],s[16],temp[100],c;
 	emptyBlock(TEMP_BLOCK);
@@ -626,9 +639,10 @@ int loadDataToDisk(char *name)
 /*
   This function copies the init program to its proper location on the disk.
 */
-int loadINITCode(char* fileName ){
+int loadINITCode(char* fileName )
+{
 	FILE * fp;
-	int j;
+	int i,j;
 	expandpath(fileName);
 	fp = fopen(fileName, "r");
 	if(fp == NULL)
@@ -636,12 +650,19 @@ int loadINITCode(char* fileName ){
 		printf("File %s not found.\n", fileName);
 		return -1;
 	}
-
-	j = writeFileToDisk(fp, INIT_BASIC_BLOCK, ASSEMBLY_CODE);		//writing executable file to disk
-	if(j == 1)
-		j = writeFileToDisk(fp, INIT_BASIC_BLOCK + 1, ASSEMBLY_CODE);		//if the file is longer than one page.  
-	if(j == 1)
-		writeFileToDisk(fp, INIT_BASIC_BLOCK + 2, ASSEMBLY_CODE);
+	
+	for(i=0; i<NO_OF_INIT_BLOCKS; i++)
+	{
+		j = writeFileToDisk(fp, INIT_BASIC_BLOCK + i, ASSEMBLY_CODE);
+		if(j != 1)
+			break;
+	}
+	//j = writeFileToDisk(fp, INIT_BASIC_BLOCK, ASSEMBLY_CODE);		//writing executable file to disk
+	
+	//if(j == 1)
+	//	j = writeFileToDisk(fp, INIT_BASIC_BLOCK + 1, ASSEMBLY_CODE);		//if the file is longer than one page.  
+	//if(j == 1)
+		//writeFileToDisk(fp, INIT_BASIC_BLOCK + 2, ASSEMBLY_CODE);
 	close(fp);
 	return 0;
   
@@ -659,19 +680,25 @@ int loadOSCode(char* fileName){
 	writeToDisk(TEMP_BLOCK,OS_STARTUP_CODE);
 	expandpath(fileName);
 	FILE* fp = fopen(fileName, "r");
-	int j;
+	int i,j;
 	if(fp == NULL)
 	{
 		printf("File %s not found.\n", fileName);
 		return -1;
 	}
 	
-	j = writeFileToDisk(fp, OS_STARTUP_CODE, ASSEMBLY_CODE);
+	for(i=0;i<OS_STARTUP_CODE_SIZE;i++)
+	{
+		j = writeFileToDisk(fp, OS_STARTUP_CODE + i, ASSEMBLY_CODE);
+		if (j != 1)
+			break;
+	}
 	if(j==1)
 	{
-		printf("OS Code exceeds one block\n");
-		emptyBlock(TEMP_BLOCK);
-		writeToDisk(TEMP_BLOCK,OS_STARTUP_CODE);
+		printf("OS Code exceeds %d block\n",OS_STARTUP_CODE_SIZE);
+		deleteOSCodeFromDisk();
+		//emptyBlock(TEMP_BLOCK);
+		//writeToDisk(TEMP_BLOCK,OS_STARTUP_CODE);
 	}
 	close(fp);
 	return 0;
@@ -685,18 +712,26 @@ int loadIntCode(char* fileName, int intNo)
 {
 	expandpath(fileName);
 	FILE* fp = fopen(fileName, "r");
-	int j;
+	int i,j;
 	if(fp == NULL)
 	{
 		printf("File %s not found.\n", fileName);
 		return -1;
 	}
-	j = writeFileToDisk(fp, intNo + INT1 - 1, ASSEMBLY_CODE);
+	
+	for(i=0;i<INT1_SIZE;i++)
+	{
+		//printf ("Int block 1 - %d = %d\n",i,((intNo - 1) * INT1_SIZE)  + INT1 + i);
+		j = writeFileToDisk(fp, ((intNo - 1) * INT1_SIZE)  + INT1 + i, ASSEMBLY_CODE);
+		if(j != 1)
+			break;
+	}
 	if(j==1)
 	{
-		printf("Interrupt Code exceeds one block\n");
-		emptyBlock(TEMP_BLOCK);
-		writeToDisk(TEMP_BLOCK,intNo + INT1 -1);
+		printf("Interrupt Code exceeds %d block\n",INT1_SIZE);
+		deleteIntCode(intNo);
+		//emptyBlock(TEMP_BLOCK);
+		//writeToDisk(TEMP_BLOCK,intNo + INT1 -1);
 	}
 	close(fp);
 	return 0;
@@ -709,18 +744,25 @@ int loadTimerCode(char* fileName)
 {
 	expandpath(fileName);
 	FILE* fp = fopen(fileName, "r");
-	int j;
+	int i,j;
 	if(fp == NULL)
 	{
 		printf("File %s not found.\n", fileName);
 		return -1;
 	}
-	j = writeFileToDisk(fp, TIMERINT, ASSEMBLY_CODE);
+	
+	for(i=0;i<TIMERINT_SIZE;i++)
+	{
+		j = writeFileToDisk(fp, TIMERINT + i, ASSEMBLY_CODE);
+		if (j != 1)
+			break;
+	}
 	if(j==1)
 	{
-		printf("Timer Interrupt Code exceeds one block\n");
-		emptyBlock(TEMP_BLOCK);
-		writeToDisk(TEMP_BLOCK,TIMERINT);
+		printf("Timer Interrupt Code exceeds %d block\n",TIMERINT_SIZE);
+		deleteTimerFromDisk();
+		//emptyBlock(TEMP_BLOCK);
+		//writeToDisk(TEMP_BLOCK,TIMERINT);
 	}
 	close(fp);
 	return 0;
@@ -733,18 +775,25 @@ int loadExHandlerToDisk(char* fileName)
 {
 	expandpath(fileName);
 	FILE* fp = fopen(fileName, "r");
-	int j;
+	int i,j;
 	if(fp == NULL)
 	{
 		printf("File %s not found.\n", fileName);
 		return -1;
 	}
-	j = writeFileToDisk(fp, EX_HANDLER, ASSEMBLY_CODE);
+	
+	for(i=0;i<EX_HANDLER_SIZE;i++)
+	{
+		j = writeFileToDisk(fp, EX_HANDLER + i, ASSEMBLY_CODE);
+		if(j != 1)
+			break;
+	}
 	if(j==1)
 	{
 		printf("Exception Handler exceeds one block\n");
-		emptyBlock(TEMP_BLOCK);
-		writeToDisk(TEMP_BLOCK,EX_HANDLER);
+		deleteExHandlerFromDisk();
+		//emptyBlock(TEMP_BLOCK);
+		//writeToDisk(TEMP_BLOCK,EX_HANDLER);
 	}
 	close(fp);
 	return 0;

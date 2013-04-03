@@ -13,7 +13,8 @@
       disk file.
     4. Finally the entry for init process is made.
 */
-void createDisk(int format){
+void createDisk(int format)
+{
     int fd;
     if(format)
     {

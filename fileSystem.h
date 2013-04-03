@@ -15,27 +15,38 @@ Declarations of Disk parameters
 #define WORD_SIZE 16
 #define OS_STARTUP_CODE 0
 #define EX_HANDLER 1
-#define TIMERINT 2
-#define INT1 3
-#define INT2 4
-#define INT3 5
-#define INT4 6
-#define INT5 7
-#define INT6 8
-#define INT7 9
+#define TIMERINT 3
+#define INT1 5
+#define INT2 7
+#define INT3 9
+#define INT4 11
+#define INT5 13
+#define INT6 15
+#define INT7 17
 
-#define FAT 10
+#define OS_STARTUP_CODE_SIZE 1
+#define EX_HANDLER_SIZE 2
+#define TIMERINT_SIZE 2
+#define INT1_SIZE 2
+#define INT2_SIZE 2
+#define INT3_SIZE 2
+#define INT4_SIZE 2
+#define INT5_SIZE 2
+#define INT6_SIZE 2
+#define INT7_SIZE 2
+
+#define FAT 19
 #define NO_OF_FAT_BLOCKS 1
 
-#define DISK_FREE_LIST 11
+#define DISK_FREE_LIST 20
 #define NO_OF_FREE_LIST_BLOCKS 1
 
-#define INIT_BASIC_BLOCK 13
+#define INIT_BASIC_BLOCK 21
 #define INIT_NAME "init.xsm"
 #define NO_OF_INIT_BLOCKS 3
 
-#define DATA_START_BLOCK 16
-#define NO_OF_DATA_BLOCKS 432
+#define DATA_START_BLOCK 24
+#define NO_OF_DATA_BLOCKS 424
 
 #define SWAP_START_BLOCK 448
 #define NO_OF_SWAP_BLOCKS 64
@@ -67,9 +78,9 @@ Declarations for files
 Other declarations
 */
 
-#define NO_BLOCKS_TO_COPY 13        //Rest of the blocks have data. Blocks 0-12 need to be copied 
+#define NO_BLOCKS_TO_COPY 21        //Rest of the blocks have data. Blocks 0-12 need to be copied 
 #define EXTRA_BLOCKS	1			// Need a temporary block
-#define TEMP_BLOCK 12				//Temporary block no: starting from 0.
+#define TEMP_BLOCK 21				//Temporary block no: starting from 0.
 
 #define ASSEMBLY_CODE 0
 #define DATA_FILE 1
