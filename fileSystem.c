@@ -62,22 +62,21 @@ int getDataBlocks(int *basicBlockAddr, int locationOfFat)
 	int i,a;
 	basicBlockAddr[0] = getValue(disk[FAT + locationOfFat / BLOCK_SIZE].word[locationOfFat % BLOCK_SIZE + FATENTRY_BASICBLOCK]);
 	emptyBlock(TEMP_BLOCK);
+	//printf("Basic Block = %d\n",basicBlockAddr[0]);
 	readFromDisk(TEMP_BLOCK,basicBlockAddr[0]);
-	 
+	
 	i = 0;
 	a = getValue(disk[TEMP_BLOCK].word[i]);
-	while ((a != -1) && i < MAX_DATAFILE_SIZE)
+	while ((a > 0) && i < MAX_DATAFILE_SIZE)
 	{
+		//printf("%d %d\t",i+1,a);
 		basicBlockAddr[i+1] = a;
 		i++;
 		a = getValue(disk[TEMP_BLOCK].word[i]);
 	}
+	
 	return 0;
 }
-
-
-
-
 
 
 
@@ -114,7 +113,6 @@ int removeFatEntry(int locationOfFat){
 }
 
 
-
 /*
   This function deletes an executable file from the disk.
   NOTE: 1. Memory copy is committed to disk.
@@ -125,15 +123,19 @@ int removeFatEntry(int locationOfFat){
 int deleteExecutableFromDisk(char *name)
 {
 	int locationOfFat,i,blockAddresses[SIZE_EXEFILE_BASIC];   //0-basic block , 1,2,3-code+data blocks
-	if(strcmp(name, INIT_NAME) == 0){
-	  printf("Init cannot be removed\n");
-	  return 0;
-	}
+	for(i=0;i<SIZE_EXEFILE_BASIC;i++)
+		blockAddresses[i]=0;
 	locationOfFat = CheckRepeatedName(name);
 	if(locationOfFat >= FAT_SIZE){
 		printf("File not found\n");
 		return -1;
 	}
+	if(strstr(name,".xsm") == NULL)
+	{
+		printf("File is not an exec file\n");
+		return -1;
+	}
+	
 	getDataBlocks(blockAddresses,locationOfFat);		
 	FreeUnusedBlock(blockAddresses, SIZE_EXEFILE_BASIC);
 	removeFatEntry(locationOfFat);
@@ -142,7 +144,8 @@ int deleteExecutableFromDisk(char *name)
 	}
 	for( i=DISK_FREE_LIST ; i<DISK_FREE_LIST + NO_OF_FREE_LIST_BLOCKS; i++)
 		writeToDisk(i,i);
-		return 0;	
+	
+	return 0;	
 }
 
 /*
@@ -150,18 +153,21 @@ int deleteExecutableFromDisk(char *name)
 */
 int deleteDataFromDisk(char *name)
 {
-	int locationOfFat,i,blockAddresses[MAX_DATAFILE_SIZE_BASIC+1];   
-	if(strcmp(name, INIT_NAME) == 0)
-	{
-		printf("Init cannot be removed\n");
-		return 0;
-	}
+	int locationOfFat,i,blockAddresses[MAX_DATAFILE_SIZE_BASIC+1];
+	for(i=0;i<MAX_DATAFILE_SIZE_BASIC;i++)
+		blockAddresses[i]=0;   
 	locationOfFat = CheckRepeatedName(name);
 	if(locationOfFat >= FAT_SIZE)
 	{
 		printf("File not found\n");
 		return -1;
 	}
+	if(strstr(name,".dat") == NULL)
+	{
+		printf("File is not a data file\n");
+		return -1;
+	}
+	
 	getDataBlocks(blockAddresses,locationOfFat);		
 	FreeUnusedBlock(blockAddresses, MAX_DATAFILE_SIZE_BASIC);
 	removeFatEntry(locationOfFat);
