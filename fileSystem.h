@@ -112,7 +112,7 @@ int removeFatEntry(int locationOfFat);
 /*
   This function returns the basic block entry(pass by pointer) corresponding to the address specified by the second arguement.
 */
-int getDataBlocks(int *basicBlockAddr, int locationOfFat,int type);
+int getDataBlocks(int *basicBlockAddr, int locationOfFat);
 
 /*
   This function loads the executable file corresponding to the first arguement to an appropriate location on the disk.

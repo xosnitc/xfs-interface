@@ -55,23 +55,22 @@ int CheckRepeatedName(char *name){
   This function returns the basic block entry(pass by pointer) corresponding to the address specified by the second arguement.
   Third argument specifies the type of file (assembly code or data file)
   NOTE: locationOfFat - relative word address of the name field in the fat.
-	This function works only for EXE files.
 */
-int getDataBlocks(int *basicBlockAddr, int locationOfFat, int type)
+int getDataBlocks(int *basicBlockAddr, int locationOfFat)
 {
 	
-	int i;
+	int i,a;
 	basicBlockAddr[0] = getValue(disk[FAT + locationOfFat / BLOCK_SIZE].word[locationOfFat % BLOCK_SIZE + FATENTRY_BASICBLOCK]);
-	readFromDisk(TEMP_BLOCK,basicBlockAddr[0]);               
-	if(type==0)				//ASSEMBLY CODE
+	emptyBlock(TEMP_BLOCK);
+	readFromDisk(TEMP_BLOCK,basicBlockAddr[0]);
+	 
+	i = 0;
+	a = getValue(disk[TEMP_BLOCK].word[i]);
+	while ((a != -1) && i < MAX_DATAFILE_SIZE)
 	{
-		for( i = 0 ; i < SIZE_EXEFILE ; i++)
-			basicBlockAddr[i+1] = getValue(disk[TEMP_BLOCK].word[i]);
-	}
-	else if(type==1)
-	{
-		for( i = 0 ; i < MAX_DATAFILE_SIZE ; i++)
-			basicBlockAddr[i+1] = getValue(disk[TEMP_BLOCK].word[i]);
+		basicBlockAddr[i+1] = a;
+		i++;
+		a = getValue(disk[TEMP_BLOCK].word[i]);
 	}
 	return 0;
 }
@@ -135,7 +134,7 @@ int deleteExecutableFromDisk(char *name)
 		printf("File not found\n");
 		return -1;
 	}
-	getDataBlocks(blockAddresses,locationOfFat,ASSEMBLY_CODE);		
+	getDataBlocks(blockAddresses,locationOfFat);		
 	FreeUnusedBlock(blockAddresses, SIZE_EXEFILE_BASIC);
 	removeFatEntry(locationOfFat);
 	for(i = FAT ; i < FAT + NO_OF_FAT_BLOCKS ; i++){
@@ -151,7 +150,7 @@ int deleteExecutableFromDisk(char *name)
 */
 int deleteDataFromDisk(char *name)
 {
-	int locationOfFat,i,blockAddresses[MAX_DATAFILE_SIZE_BASIC];   
+	int locationOfFat,i,blockAddresses[MAX_DATAFILE_SIZE_BASIC+1];   
 	if(strcmp(name, INIT_NAME) == 0)
 	{
 		printf("Init cannot be removed\n");
@@ -163,7 +162,7 @@ int deleteDataFromDisk(char *name)
 		printf("File not found\n");
 		return -1;
 	}
-	getDataBlocks(blockAddresses,locationOfFat,DATA_FILE);		
+	getDataBlocks(blockAddresses,locationOfFat);		
 	FreeUnusedBlock(blockAddresses, MAX_DATAFILE_SIZE_BASIC);
 	removeFatEntry(locationOfFat);
 	for(i = FAT ; i < FAT + NO_OF_FAT_BLOCKS ; i++){
@@ -815,7 +814,7 @@ void displayFileContents(char *name)
 	
 	close(fd);
 	int i,j,k,l,flag=0,locationOfFat;
-	int blk[SIZE_EXEFILE_BASIC];
+	int blk[512];
 	
 	locationOfFat = CheckRepeatedName(name);
 	if(locationOfFat >= FAT_SIZE){
@@ -824,20 +823,19 @@ void displayFileContents(char *name)
 	}
 	
 	
-	getDataBlocks(blk,locationOfFat,ASSEMBLY_CODE);
+	getDataBlocks(blk,locationOfFat);
 
-	for(k = 1; k <= SIZE_EXEFILE; k++)
+	k = 1;
+	while (blk[k] > 0)
 	{
-		if(blk[k]!=0)
+		emptyBlock(TEMP_BLOCK);
+		readFromDisk(TEMP_BLOCK,blk[k]);
+		for(l=0;l<BLOCK_SIZE;l++)
 		{
-			emptyBlock(TEMP_BLOCK);
-			readFromDisk(TEMP_BLOCK,blk[k]);
-			for(l=0;l<BLOCK_SIZE;l++)
-			{
-				if(strcmp(disk[TEMP_BLOCK].word[l],"\0")!=0)
-					printf("%d - %s   \n",l,disk[TEMP_BLOCK].word[l]);
-			}
+			if(strcmp(disk[TEMP_BLOCK].word[l],"\0")!=0)
+				printf("%d - %s   \n",l,disk[TEMP_BLOCK].word[l]);
 		}
+		k++;
 	}
 }
 
