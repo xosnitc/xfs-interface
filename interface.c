@@ -90,14 +90,45 @@ void runCommand(char command[])
 			printf("Missing <pathname> for load. See \"help\" for more information\n");
 			return;
 		}				
-		if (strcmp(arg1,"--exec")==0)		
+		if (strcmp(arg1,"--exec")==0)	
+		{
+			char *c;
+			if (strlen(fileName) > 12)
+			{
+				printf("Filename is more than 12 characters long\n");
+				return;
+			}
+			
+			c = strrchr(fileName,'.');
+			if (c == NULL || strcmp(c,".xsm") != 0)
+			{
+				printf("Filename does not have \".xsm\" extension\n");
+				return;
+			}
+			
 			loadExecutableToDisk(fileName);	 //loads executable file to disk.
+		}	
+			
 		else if (strcmp(arg1,"--init")==0)	
 			loadINITCode(fileName);			 //loads init code to disk
 		else if (strcmp(arg1,"--data")==0) 
+		{
+			char *c;
+			if (strlen(fileName) > 12)
 			{
-				loadDataToDisk(fileName);		 //loads data file to disk.
+				printf("Filename is more than 12 characters long\n");
+				return;
 			}
+			
+			c = strrchr(fileName,'.');
+			if (c == NULL || strcmp(c,".dat") != 0)
+			{
+				printf("Filename does not have \".dat\" extension\n");
+				return;
+			}
+			
+			loadDataToDisk(fileName);		 //loads data file to disk.
+		}
 		else if (strcmp(arg1,"--os")==0)
 			loadOSCode(fileName);			//loads OS startup code to disk
 		else if (strcmp(arg1,"--int")==0)
@@ -109,7 +140,13 @@ void runCommand(char command[])
 			else
 			{
 				int intNo = atoi(intType);
-				loadIntCode(fileName, intNo);
+				if(intNo >=1 && intNo <=NO_OF_INTERRUPTS)
+					loadIntCode(fileName, intNo);
+				else
+				{
+					printf("Invalid argument for \"--int=\" \n");
+					return;
+				}
 			}
 		}
 		else if (strcmp(arg1,"--exhandler")==0) 
@@ -167,13 +204,19 @@ void runCommand(char command[])
 		else if (strcmp(arg1,"--int")==0)
 		{
 			if(strcmp(intType,"timer")==0)
-				{
-					deleteTimerFromDisk();				//removes Timer interrupt routine from disk.
-				}
+			{
+				deleteTimerFromDisk();				//removes Timer interrupt routine from disk.
+			}
 			else
 			{
 				int intNo = atoi(intType);
-				deleteIntCode(intNo);				//removes Int Code from disk.
+				if(intNo >=1 && intNo <= NO_OF_INTERRUPTS)
+					deleteIntCode(intNo);				//removes Int Code from disk.
+				else
+				{
+					printf("Invalid argument for \"--int=\" \n");
+					return;
+				}
 			}
 		}
 		else if (strcmp(arg1,"--exhandler")==0)
@@ -181,7 +224,7 @@ void runCommand(char command[])
 				deleteExHandlerFromDisk();			 //removes exception handler routine from disk.			
 			}
 		else
-			printf("Invalid argument \"%s\" for rm. See \"help\" for more information",arg1);
+			printf("Invalid argument \"%s\" for rm. See \"help\" for more information\n",arg1);
 	}	
 	
 	else if (strcmp(name,"ls")==0)		//Lists all files.
