@@ -87,7 +87,7 @@ void runCommand(char command[])
 			fileName[50] = '\0';
 		else
 		{
-			printf("Missing <pathname> for load. See \"help\" for more information");
+			printf("Missing <pathname> for load. See \"help\" for more information\n");
 			return;
 		}				
 		if (strcmp(arg1,"--exec")==0)		
@@ -117,7 +117,7 @@ void runCommand(char command[])
 				loadExHandlerToDisk(fileName);		 //loads exception handler routine to disk.
 			}
 		else
-			printf("Invalid argument \"%s\" for load. See \"help\" for more information",arg1);
+			printf("Invalid argument \"%s\" for load. See \"help\" for more information\n",arg1);
 	}	
 	
 	else if (strcmp(name,"rm")==0) 	//removes files to XFS disk.
@@ -142,7 +142,7 @@ void runCommand(char command[])
 		{
 			if(fileName==NULL)
 			{
-				printf("Missing <xfs_filename> for rm. See \"help\" for more information");
+				printf("Missing <xfs_filename> for rm. See \"help\" for more information\n");
 				return;
 			}
 			deleteExecutableFromDisk(fileName);	 	//removes executable file fron disk.
@@ -155,7 +155,7 @@ void runCommand(char command[])
 		{
 			if(fileName==NULL)
 			{
-				printf("Missing <xfs_filename> for rm. See \"help\" for more information");
+				printf("Missing <xfs_filename> for rm. See \"help\" for more information\n");
 				return;
 			}
 			deleteDataFromDisk(fileName);			 //removes data file from disk..		
@@ -202,7 +202,7 @@ void runCommand(char command[])
 		}
 		else
 		{
-			printf("Missing <xfs_filename> for cat. See \"help\" for more information");
+			printf("Missing <xfs_filename> for cat. See \"help\" for more information\n");
 			return;
 		}	
 	}
@@ -213,7 +213,7 @@ void runCommand(char command[])
 		arg3 = strtok(NULL, " ");
 		if(arg1==NULL || arg2==NULL|| arg3==NULL)
 		{
-			printf("Insufficient arguments for \"copy\". See \"help\" for more information");
+			printf("Insufficient arguments for \"copy\". See \"help\" for more information\n");
 			return;
 		}	
 		else
@@ -228,7 +228,7 @@ void runCommand(char command[])
 	else if (strcmp(name,"exit")==0)		//Exits the interface
 		exit(0);
 	else
-		printf("Unknown command \"%s\". See \"help\" for more information",name);
+		printf("Unknown command \"%s\". See \"help\" for more information\n",name);
 }
 
 

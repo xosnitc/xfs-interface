@@ -14,18 +14,25 @@ void listAllFiles(){
 	int fd;
 	fd = open(DISK_NAME, O_RDONLY, 0666);
 	if(fd < 0){
-	  printf("Unable to Open Disk File\n");
+	  printf("Unable to Open Disk File!\n");
 	  return;
 	}
 	close(fd);
 	int i,j;
+	int hasFiles = 0; 	// Flag which indicates if disk has no files
 	for(j = FAT ; j < FAT + NO_OF_FAT_BLOCKS ; j++)
 	{
 		for(i = 0 ; i < BLOCK_SIZE ; i = i + FATENTRY_SIZE)
 		{
-			if( getValue(disk[j].word[i+FATENTRY_BASICBLOCK]) != -1 )
+			if( getValue(disk[j].word[i+FATENTRY_BASICBLOCK]) > 0 )	// Negative value indicates invalid FAT
+			{ 	hasFiles = 1;
 				printf("Filename: %s   Filesize: %d\n",disk[j].word[i+FATENTRY_FILENAME],getValue(disk[j].word[i+FATENTRY_FILESIZE]));
+			}		
 		}
+	}
+	if(!hasFiles)
+	{
+		printf("The disk contains no files!\n");
 	}
 }
 
@@ -127,12 +134,12 @@ int deleteExecutableFromDisk(char *name)
 		blockAddresses[i]=0;
 	locationOfFat = CheckRepeatedName(name);
 	if(locationOfFat >= FAT_SIZE){
-		printf("File not found\n");
+		printf("File \'%s\' not found!\n",name);
 		return -1;
 	}
 	if(strstr(name,".xsm") == NULL)
 	{
-		printf("File is not an exec file\n");
+		printf("\'%s\' is not a valid executable file!\n",name);
 		return -1;
 	}
 	
@@ -159,12 +166,12 @@ int deleteDataFromDisk(char *name)
 	locationOfFat = CheckRepeatedName(name);
 	if(locationOfFat >= FAT_SIZE)
 	{
-		printf("File not found\n");
+		printf("File \'%s\' not found!\n",name);
 		return -1;
 	}
 	if(strstr(name,".dat") == NULL)
 	{
-		printf("File is not a data file\n");
+		printf("\'%s\' is not a valid data file!\n",name);
 		return -1;
 	}
 	
@@ -483,7 +490,7 @@ int loadExecutableToDisk(char *name)
 	for(i = 0; i < num_of_blocks_reqd + 1; i++)
 	{
 		if((freeBlock[i] = FindFreeBlock()) == -1){
-				printf("not sufficient space in disk to hold a new file.\n");
+				printf("Insufficient disk space!\n");
 				FreeUnusedBlock(freeBlock, SIZE_EXEFILE_BASIC);
 				return -1;
 			}
@@ -557,12 +564,12 @@ int loadDataToDisk(char *name)
 	fileToBeLoaded = fopen(name, "r");
 	if(fileToBeLoaded == NULL)
 	{
-		printf("File %s not found.\n", name);
+		printf("File \'%s\' not found.!\n", name);
 		return -1;
 	}
 	if(fileToBeLoaded == NULL)
 	{
-		printf("The file could not be opened");
+		printf("The file could not be opened!");
 		return -1;
 	}
 	
@@ -652,7 +659,7 @@ int loadINITCode(char* fileName )
 	fp = fopen(fileName, "r");
 	if(fp == NULL)
 	{
-		printf("File %s not found.\n", fileName);
+		printf("File \'%s\' not found.\n", fileName);
 		return -1;
 	}
 	
@@ -688,7 +695,7 @@ int loadOSCode(char* fileName){
 	int i,j;
 	if(fp == NULL)
 	{
-		printf("File %s not found.\n", fileName);
+		printf("File \'%s\' not found.\n", fileName);
 		return -1;
 	}
 	
@@ -720,7 +727,7 @@ int loadIntCode(char* fileName, int intNo)
 	int i,j;
 	if(fp == NULL)
 	{
-		printf("File %s not found.\n", fileName);
+		printf("File \'%s\' not found.\n", fileName);
 		return -1;
 	}
 	
@@ -814,7 +821,7 @@ void displayFileContents(char *name)
 	int fd;
 	fd = open(DISK_NAME, O_RDONLY, 0666);
 	if(fd < 0){
-	  printf("Unable to Open Disk File\n");
+	  printf("Unable to Open Disk File!\n");
 	  return;
 	}
 	
@@ -824,7 +831,7 @@ void displayFileContents(char *name)
 	
 	locationOfFat = CheckRepeatedName(name);
 	if(locationOfFat >= FAT_SIZE){
-		printf("File not found\n");
+		printf("File \'%s\' not found!\n",name);
 		return;
 	}
 	
@@ -839,7 +846,7 @@ void displayFileContents(char *name)
 		for(l=0;l<BLOCK_SIZE;l++)
 		{
 			if(strcmp(disk[TEMP_BLOCK].word[l],"\0")!=0)
-				printf("%d - %s   \n",l,disk[TEMP_BLOCK].word[l]);
+				printf("%s   \n",disk[TEMP_BLOCK].word[l]);
 		}
 		k++;
 	}
@@ -853,7 +860,7 @@ void copyBlocksToFile (int startblock,int endblock,char *filename)
 	int fd;
 	fd = open(DISK_NAME, O_RDONLY, 0666);
 	if(fd < 0){
-	  printf("Unable to Open Disk File\n");
+	  printf("Unable to Open Disk File!\n");
 	  return;
 	}
 	close(fd);
@@ -863,7 +870,7 @@ void copyBlocksToFile (int startblock,int endblock,char *filename)
 	fp = fopen(filename,"w");
 	if(fp == NULL)
 	{
-		printf("File %s not found.\n", filename);
+		printf("File \'%s\' not found!\n", filename);
 	}
 	else
 	{
@@ -889,7 +896,7 @@ void displayDiskFreeList()
 	int fd;
 	fd = open(DISK_NAME, O_RDONLY, 0666);
 	if(fd < 0){
-	  printf("Unable to Open Disk File\n");
+	  printf("Unable to Open Disk File!\n");
 	  return;
 	}
 	close(fd);
