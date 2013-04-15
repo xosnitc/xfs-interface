@@ -831,6 +831,9 @@ void displayFileContents(char *name)
 	int i,j,k,l,flag=0,locationOfFat;
 	int blk[512];
 	
+	for(i=0;i<511;i++)
+		blk[i] = 0;
+	
 	locationOfFat = CheckRepeatedName(name);
 	if(locationOfFat >= FAT_SIZE){
 		printf("File \'%s\' not found!\n",name);
@@ -850,6 +853,8 @@ void displayFileContents(char *name)
 			if(strcmp(disk[TEMP_BLOCK].word[l],"\0")!=0)
 				printf("%s   \n",disk[TEMP_BLOCK].word[l]);
 		}
+		//printf("next block\n");
+		emptyBlock(TEMP_BLOCK);
 		k++;
 	}
 }
