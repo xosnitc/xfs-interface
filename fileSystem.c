@@ -97,6 +97,8 @@ void FreeUnusedBlock(int *freeBlock, int size){
 	for( i = 0 ; i < size && freeBlock[i] != -1 && freeBlock[i] != 0; i++){
 		//printf("Block Num = %d\nLocation = %d", freeBlock[i],freeBlock[i] % BLOCK_SIZE );
 		storeValue( disk[DISK_FREE_LIST + freeBlock[i] / BLOCK_SIZE].word[freeBlock[i] % BLOCK_SIZE] , 0 );
+		emptyBlock(TEMP_BLOCK);
+		writeToDisk(TEMP_BLOCK,freeBlock[i]);
 	}
 }
 
