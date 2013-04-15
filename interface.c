@@ -5,25 +5,38 @@
 /* 
 Function to invoke Command Line interface 
 */
-void cli()
+void cli(int argc, char **argv)
 {
 	char command[100], c;
 	int i,j;
-	
-	printf("Unix-XFS Interace Version 1.0. \nType \"help\" for  getting a list of commands.");
-	while(1)
+	if(argc>1)
 	{
-		i=0;
-		printf("\n# ");
-		scanf("%c",&c);
-		while(c!='\n')
-		{  	
-			command[i++] = c;
+		i=1;
+		while(i<argc)
+		{
+		
+			sprintf(command,"%s %s", command, argv[i]);
+			i++;
+		}		
+		runCommand(command);	
+	}
+	else
+	{
+		printf("Unix-XFS Interace Version 1.0. \nType \"help\" for  getting a list of commands.");
+		while(1)
+		{
+			i=0;
+			printf("\n# ");
 			scanf("%c",&c);
+			while(c!='\n')
+			{  	
+				command[i++] = c;
+				scanf("%c",&c);
+			}
+			command[i] = '\0';
+			if(command[0]!='\0')
+					runCommand(command);
 		}
-		command[i] = '\0';
-		if(command[0]!='\0')
-				runCommand(command);
 	}
 }
 
@@ -276,7 +289,7 @@ void runCommand(char command[])
 
 
 
-int main(){
+int main(int argc, char **argv){
 	int  intNo, fd;
 	char fileName[51], option;
 	FILE* diskFp;
@@ -288,6 +301,6 @@ int main(){
 	}
 	close(fd);
 		
-	cli();					//Loads the Command Line Interface
+	cli(argc, argv);					//Loads the Command Line Interface
 	return 0;
 }
