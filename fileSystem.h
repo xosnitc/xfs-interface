@@ -45,6 +45,8 @@ Declarations of Disk parameters
 #define INIT_NAME "init.xsm"
 #define NO_OF_INIT_BLOCKS 3
 
+#define NO_OF_INTERRUPTS 7
+
 #define DATA_START_BLOCK 24
 #define NO_OF_DATA_BLOCKS 424
 
