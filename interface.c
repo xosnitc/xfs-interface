@@ -1,4 +1,5 @@
 #include <string.h>
+#include <libgen.h>
 #include "interface.h"
 
 
@@ -106,7 +107,7 @@ void runCommand(char command[])
 		if (strcmp(arg1,"--exec")==0)	
 		{
 			char *c;
-			if (strlen(fileName) > 12)
+			if (strlen(basename(fileName)) > 12)
 			{
 				printf("Filename is more than 12 characters long\n");
 				return;
@@ -127,7 +128,7 @@ void runCommand(char command[])
 		else if (strcmp(arg1,"--data")==0) 
 		{
 			char *c;
-			if (strlen(fileName) > 12)
+			if (strlen(basename(fileName)) > 12)
 			{
 				printf("Filename is more than 12 characters long\n");
 				return;
