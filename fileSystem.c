@@ -327,7 +327,7 @@ int writeFileToDisk(FILE *f, int blockNum, int type)
 	{
 		char *instr, *arg1, *arg2, *string_start;
 		int line_count=0,flag=0,k=0;
-		for(i = 0; i < (BLOCK_SIZE/2); i=i++)
+		for(i = 0; i < (BLOCK_SIZE/2); i++)
 		{
 			fgets(temp,100,f);
 			
@@ -418,7 +418,7 @@ int writeFileToDisk(FILE *f, int blockNum, int type)
 	else if(type==1)			//writing data files
 	{
 		char buffer1[16],c;
-		for(i = 0; i < BLOCK_SIZE; i=i++)
+		for(i = 0; i < BLOCK_SIZE; i++)
 		{
 			fgets(buffer1,16,f);
 			strcpy(disk[TEMP_BLOCK].word[i],buffer1);
