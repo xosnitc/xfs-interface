@@ -12,7 +12,8 @@ void cli(int argc, char **argv)
 	int i,j;
 	if(argc>1)
 	{
-		i=1;
+		strcpy(command,argv[1]);
+		i=2;
 		while(i<argc)
 		{
 		
