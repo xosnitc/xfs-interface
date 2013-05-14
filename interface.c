@@ -24,11 +24,11 @@ void cli(int argc, char **argv)
 	}
 	else
 	{
-		printf("Unix-XFS Interace Version 1.0. \nType \"help\" for  getting a list of commands.");
+		printf("Unix-XFS Interace Version 1.0. \nType \"help\" for  getting a list of commands.\n");
 		while(1)
 		{
 			i=0;
-			printf("\n# ");
+			printf("# ");
 			scanf("%c",&c);
 			while(c!='\n')
 			{  	
@@ -53,25 +53,25 @@ void runCommand(char command[])
 	
 	if(strcmp(name,"help")==0)		//"help" to display all commands
 	{
-		printf("\n fdisk \n\t Format the disk with XFS filesystem\n\n");	
-		printf(" load --exec  <pathname>  \n\t Loads an executable file to XFS disk \n\n");
-		printf(" load --init  <pathname> \n\t Loads INIT code to XFS disk \n\n");
-		printf(" load --data <pathname> \n\t Loads a data file to XFS disk \n\n");
-		printf(" load --os  <pathname> \n\t Loads OS startup code to XFS disk \n\n");
-		printf(" load --int=timer <pathname>\n\t Loads Timer Interrupt routine to XFS disk \n\n");		
-		printf(" load --int=[1-7] <pathname>\n\t Loads the specified Interrupt routine to XFS disk \n\n");
-		printf(" load --exhandler <pathname>  \n\t Loads exception handler routine to XFS disk \n\n");
-		printf(" rm --exec <xfs_filename>\n\t Removes an executable file from XFS disk \n\n");
-		printf(" rm --init <xfs_filename> \n\t Removes INIT code from XFS disk \n\n");	
-		printf(" rm --data <xfs_filename>\n\t Removes a data file from XFS disk \n\n");
-		printf(" rm --os \n\t Removes OS startup code from XFS disk \n\n");
-		printf(" rm --int=timer \n\t Removes the Timer Interrupt routine from XFS disk \n\n");	
-		printf(" rm --int=[1-7] \n\t Removes the specified Interrupt routine from XFS disk \n\n");
-		printf(" rm --exhandler\n\t Removes the exception handler routine from XFS disk \n\n");
-		printf(" ls \n\t List all files\n\n");	
-		printf(" df \n\t Display free list and free space\n\n");
-		printf(" cat <xfs_filename> \n\t to display contents of a file\n\n");
-		printf(" copy <start_blocks> <end_block> <unix_filename>\n\t Copies contents of specified range of blocks to a UNIX file.\n\n");	
+		printf(" fdisk \n\t Format the disk with XFS filesystem\n");
+		printf(" load --exec  <pathname>  \n\t Loads an executable file to XFS disk \n");
+		printf(" load --init  <pathname> \n\t Loads INIT code to XFS disk \n");
+		printf(" load --data <pathname> \n\t Loads a data file to XFS disk \n");
+		printf(" load --os  <pathname> \n\t Loads OS startup code to XFS disk \n");
+		printf(" load --int=timer <pathname>\n\t Loads Timer Interrupt routine to XFS disk \n");
+		printf(" load --int=[1-7] <pathname>\n\t Loads the specified Interrupt routine to XFS disk \n");
+		printf(" load --exhandler <pathname>  \n\t Loads exception handler routine to XFS disk \n");
+		printf(" rm --exec <xfs_filename>\n\t Removes an executable file from XFS disk \n");
+		printf(" rm --init <xfs_filename> \n\t Removes INIT code from XFS disk \n");
+		printf(" rm --data <xfs_filename>\n\t Removes a data file from XFS disk \n");
+		printf(" rm --os \n\t Removes OS startup code from XFS disk \n");
+		printf(" rm --int=timer \n\t Removes the Timer Interrupt routine from XFS disk \n");
+		printf(" rm --int=[1-7] \n\t Removes the specified Interrupt routine from XFS disk \n");
+		printf(" rm --exhandler\n\t Removes the exception handler routine from XFS disk \n");
+		printf(" ls \n\t List all files\n");
+		printf(" df \n\t Display free list and free space\n");
+		printf(" cat <xfs_filename> \n\t to display contents of a file\n");
+		printf(" copy <start_blocks> <end_block> <unix_filename>\n\t Copies contents of specified range of blocks to a UNIX file.\n");
 		printf(" exit \n\t Exit the interface\n");
 	}
 	
