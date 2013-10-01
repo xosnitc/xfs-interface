@@ -447,7 +447,7 @@ int loadExecutableToDisk(char *name)
 	FILE *fileToBeLoaded;
 	int freeBlock[SIZE_EXEFILE_BASIC];
 	int i,j,k,l,file_size=0,num_of_lines=0,num_of_blocks_reqd=0;
-	for(i=0;i<SIZE_EXEFILE_BASIC;i++)
+	for(i=0;i<BLOCK_SIZE;i++)
 		freeBlock[i]=-1;
 	char c='\0',*s;
 	char filename[50];
@@ -549,7 +549,7 @@ int loadDataToDisk(char *name)
 	FILE *fileToBeLoaded;
 	int freeBlock[MAX_DATAFILE_SIZE_BASIC];
 	int i,j,k,num_of_chars=0,num_of_blocks_reqd=0,file_size=0,num_of_words=0;
-	for(i=0;i<MAX_DATAFILE_SIZE_BASIC;i++)
+	for(i=0;i<BLOCK_SIZE;i++)
 		freeBlock[i]=-1;
 	char c='\0',*s;
 	char filename[50],buf[16];
