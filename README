@@ -7,7 +7,7 @@ XFS Interface (eXperimental File System) is an external interface to access the 
 
 Installation
 
-Prerequisites :
+Prerequisites 
 -------------
 	• GCC (GNU project C and C++ compiler)
 
