@@ -302,7 +302,17 @@ int main(int argc, char **argv){
 		loadFileToVirtualDisk();
 	}
 	close(fd);
-		
+	
+	if(argc > 1)
+	{
+		if(strlen(argv[1]) >= 100)
+		{
+			printf("Length of argument exceeds command buffer\n");
+			printf("Fatal Error\n");
+			return 1;
+		}
+	}				
+						
 	cli(argc, argv);					//Loads the Command Line Interface
 	return 0;
 }
