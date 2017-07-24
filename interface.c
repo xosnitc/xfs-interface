@@ -72,6 +72,7 @@ void runCommand(char command[])
 		printf(" df \n\t Display free list and free space\n");
 		printf(" cat <xfs_filename> \n\t to display contents of a file\n");
 		printf(" copy <start_blocks> <end_block> <unix_filename>\n\t Copies contents of specified range of blocks to a UNIX file.\n");
+		printf(" copy-o <start_blocks> <end_block> <unix_filename>\n\t Copies contents of specified range of blocks to a UNIX file without adding endline.\n");
 		printf(" exit \n\t Exit the interface\n");
 	}
 	
@@ -281,6 +282,25 @@ void runCommand(char command[])
 			char *fileName = arg3;			
 			fileName[50] = '\0';
 			copyBlocksToFile (startBlock,endBlock,fileName);
+		}	
+	}
+	else if (strcmp(name,"copy-o")==0)		//Copies blocks from Disk to UNIX file without endline.
+	{
+		arg1 = strtok(NULL, " ");
+		arg2 = strtok(NULL, " ");
+		arg3 = strtok(NULL, " ");
+		if(arg1==NULL || arg2==NULL|| arg3==NULL)
+		{
+			printf("Insufficient arguments for \"copy\". See \"help\" for more information\n");
+			return;
+		}	
+		else
+		{
+			int startBlock = atoi(arg1);
+			int endBlock = atoi(arg2);	
+			char *fileName = arg3;			
+			fileName[50] = '\0';
+			copyBlocksToFileOrginal (startBlock,endBlock,fileName);
 		}	
 	}						
 	else if (strcmp(name,"exit")==0)		//Exits the interface

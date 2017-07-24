@@ -188,6 +188,12 @@ void displayFileContents(char *name);
 */
 void copyBlocksToFile (int startBlock,int endBlock,char *name);
 
+ /*
+   This function copies the contents of the disk starting from <startBlock> to <endBlock> to a unix file without adding endline.
+ */
+
+void copyBlocksToFileOrginal (int startBlock,int endBlock,char *name);
+
 /*
   This function deletes the INIT code from the disk.
 */

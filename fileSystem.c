@@ -894,6 +894,41 @@ void copyBlocksToFile (int startblock,int endblock,char *filename)
 	}
 	
 }
+ /*
+   This function copies the contents of the disk starting from <startBlock> to <endBlock> to a unix file without adding endline.
+ */
+void copyBlocksToFileOrginal (int startblock,int endblock,char *filename)
+{
+	int fd;
+	fd = open(DISK_NAME, O_RDONLY, 0666);
+	if(fd < 0){
+	  printf("Unable to Open Disk File!\n");
+	  return;
+	}
+	close(fd);
+	int i,j;
+	FILE *fp;
+	expandpath(filename);
+	fp = fopen(filename,"w");
+	if(fp == NULL)
+	{
+		printf("File \'%s\' not found!\n", filename);
+	}
+	else
+	{
+		for(i = startblock; i <= endblock; i++)
+		{
+			emptyBlock(TEMP_BLOCK);
+			readFromDisk(TEMP_BLOCK,i);
+			for(j=0;j<BLOCK_SIZE;j++)
+			{
+				fprintf(fp,"%s",disk[TEMP_BLOCK].word[j]);
+			}
+		}
+		fclose(fp);
+	}
+	
+}
 
 /*
   This function displays disk free list and the amount of free space in the disk.
